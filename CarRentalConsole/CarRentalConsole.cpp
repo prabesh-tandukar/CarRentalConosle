@@ -29,9 +29,25 @@ int executeQuery(sqlite3* db, const char* sql) {
     return rc;
 }
 
+void createTables(sqlite3* db) {
+    const char* sqlUserTable = "CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT);";
+    
+    const char* sqlRoleTable = "CREATE TABLE IF NOT EXISTS Role (RoleID INTEGER PRIMARY KEY AUTOINCREMENT, RoleName TEXT NOT NULL);";
+
+    const char* sqlCarTable = "CREATE TABLE IF NOT EXISTS Car (CarID INTEGER PRIMARY KEY AUTOINCREMENT, Make TEXT, Model TEXT, Year INTEGER, Mileage INTEGER, IsAvailable BOOLEAN, MinRentPeriod INTEGER, MaxRentPeriod INTEGER);";
+
+    const char* sqlRentalBookingTable = "CREATE TABLE IF NOT EXISTS RentalBooking (BookingID INTEGER PRIMARY KEY AUTOINCREMENT, CustomerID INTEGER, CarID INTEGER, StartDate TEXT, EndDate TEXT, TotalCost REAL, Status TEXT, FOREIGN KEY (CustomerID) REFERENCES User(UserID), FOREIGN KEY (CarID) REFERENCES Car(CarID));";
+
+    executeQuery(db, sqlUserTable);
+    executeQuery(db, sqlRoleTable);
+    executeQuery(db, sqlCarTable);
+    executeQuery(db, sqlRentalBookingTable);
+}
+
 //Function to register a user
 void registerUser(sqlite3* db, const std::string& username, const std::string& password) {
-    std::string sql = "INSERT INTO users (username, password, role) VALUES ('" + username + "', '" + password + "' , 'user' );";
+    std::string defaultRole = "user"; //Default role for new users
+    std::string sql = "INSERT INTO users (username, password, role) VALUES ('" + username + "', '" + password + "' , '" + defaultRole + "' ); ";
     int rc = executeQuery(db, sql.c_str());
 
     if (rc == SQLITE_OK) {
@@ -113,15 +129,12 @@ int main()
 
     sqlite3* db;
     int rc = sqlite3_open(DB_FILE, &db);
-    int input;
-    bool loginSuccess = false;
-    
-
-
     if (rc != SQLITE_OK) {
         std::cerr << "Cannot open database: " << sqlite3_errmsg(db) << std::endl;
         return rc;
     }
+
+    createTables(db);
 
     //drop user table
     /*std::string dropsql = "DROP TABLE users";
@@ -132,13 +145,6 @@ int main()
     int outp = executeQuery(db, selectsql.c_str());
   
 
-    // Create users table if it doesn't exist
-    const char* createTableSQL = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT);";
-    rc = executeQuery(db, createTableSQL);
-    if (rc != SQLITE_OK) {
-        std::cerr << "Failed to create table." << std::endl;
-        return rc;
-    }
 
     //Check if admin exists and if not, create one
     if (!adminExists(db)) {
@@ -146,10 +152,12 @@ int main()
         executeQuery(db, adminSQL.c_str());
     }
 
+    
     bool appRunning = true;
+    int input;
     while (appRunning) {
-        std::cout << "Welcome to Easy Car Rental:" << std::endl;
-        std::cout << "Enter 1 to login and 2 to register, 3 to exit" << std::endl;
+        std::cout << "----------Welcome to Easy Car Rental----------:" << std::endl;
+        std::cout << "-----Enter 1 to login and 2 to register, 3 to exit-----" << std::endl;
         std::cin >> input;
 
         if (input == 1) {
@@ -157,7 +165,7 @@ int main()
             if (role == "admin") {
                 //Show admin interface
                 AdminInterface adminInterface(db);
-                adminInterface.showMenu();
+                //adminInterface.showMenu();
             }
             else if (role == "user") {
                 //Show user interface

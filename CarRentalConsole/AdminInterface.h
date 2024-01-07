@@ -6,9 +6,16 @@
 
 class AdminInterface
 {
+private:
+	sqlite3* db;
 public:
 	AdminInterface(sqlite3* db);
 	void showMenu();
+	void addNewCar();
+	void updateCarDetails();
+	void manageCars();
+	void viewMangeBookings();
+	void manageUserAccounts();
 };
 
 #endif //ADMIN_INTERFACE_H

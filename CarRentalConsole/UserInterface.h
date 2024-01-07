@@ -6,9 +6,15 @@
 
 class UserInterface
 {
+private: 
+	sqlite3* db;
 public:
 	UserInterface(sqlite3* db);
 	void showMenu();
+	void viewAvailableCars();
+	void bookCar();
+	void viewOwnBookings();
+	void manageBooking();
 	//Other user-related methods
 };
 
