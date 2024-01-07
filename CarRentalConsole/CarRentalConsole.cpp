@@ -126,7 +126,6 @@ bool adminExists(sqlite3* db) {
 
 int main()
 {
-
     sqlite3* db;
     int rc = sqlite3_open(DB_FILE, &db);
     if (rc != SQLITE_OK) {
@@ -143,6 +142,10 @@ int main()
     //View data in user table
     std::string selectsql = "SELECT * FROM USERS";
     int outp = executeQuery(db, selectsql.c_str());
+
+    //View data in car table
+    std::string carsql = "SELECT * FROM CAR";
+    executeQuery(db, carsql.c_str());
   
 
 
@@ -165,7 +168,7 @@ int main()
             if (role == "admin") {
                 //Show admin interface
                 AdminInterface adminInterface(db);
-                //adminInterface.showMenu();
+                adminInterface.showMenu();
             }
             else if (role == "user") {
                 //Show user interface

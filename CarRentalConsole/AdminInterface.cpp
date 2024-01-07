@@ -1,10 +1,12 @@
 #include "AdminInterface.h"
 #include <iostream>
 #include <string>
+#include <sqlite3.h>
 
-AdminInterface::AdminInterface(sqlite3* db) {
+AdminInterface::AdminInterface(sqlite3* db) : db(db) {
 	//constructore implementation
-	showMenu();
+	std::cout << "Debug: DB pointer address inside AdminInterface constructor: " << this->db << std::endl;
+	
 }
 
 void AdminInterface::showMenu() {
@@ -22,10 +24,16 @@ void AdminInterface::showMenu() {
 }
 
 void AdminInterface::addNewCar() {
+	//Check if db is nullptr
+	if (db == nullptr) {
+		std::cerr << "Database connection is not initialized.\n";
+		return;
+	}
 	std::string make, model;
 	int year, mileage;
 	bool isAvailable;
 	int minRentPeriod, maxRentPeriod;
+
 
 	//Getting car details from the admin
 	std::cout << "Enter Car Make:";
@@ -43,8 +51,14 @@ void AdminInterface::addNewCar() {
 	std::cout << "Enter Maximum Rent Period (days): ";
 	std::cin >> maxRentPeriod;
 
+
+	// Convert bool to int for SQLite
+	int isAvailableInt = isAvailable ? 1 : 0;
+
 	//Constructing the SQL INSERT statement
 	std::string sql = "INSERT INTO Car (Make, Model, Year, Mileage, IsAvailable, MinRentPeriod, MaxRentPeriod) VALUES ('" + make + "', '" + model + "', " + std::to_string(year) + ", " + std::to_string(mileage) + ", " + std::to_string(isAvailable) + ", " + std::to_string(minRentPeriod) + ", " + std::to_string(maxRentPeriod) + ");";
+
+	std::cout << "Executing SQL: " << sql << std::endl; //Debugging output
 
 	//Execute SQL staement
 	char* errMsg = nullptr;
@@ -55,4 +69,5 @@ void AdminInterface::addNewCar() {
 	else {
 		std::cout << "New car added successfully." << std::endl;
 	}
+
 }
