@@ -30,9 +30,8 @@ void AdminInterface::addNewCar() {
 		return;
 	}
 	std::string make, model;
-	int year, mileage;
-	bool isAvailable;
-	int minRentPeriod, maxRentPeriod;
+	int year = 0, mileage= 0, minRentPeriod = 0, maxRentPeriod = 0;
+	bool isAvailable = false;
 
 
 	//Getting car details from the admin
@@ -42,7 +41,7 @@ void AdminInterface::addNewCar() {
 	std::cin >> model;
 	std::cout << "Enter Car Year: ";
 	std::cin >> year;
-	std::cout << "Enter Mileage";
+	std::cout << "Enter Mileage: ";
 	std::cin >> mileage;
 	std::cout << "Is the car available ( 1 for Yes, 0 for No): ";
 	std::cin >> isAvailable;
@@ -70,4 +69,61 @@ void AdminInterface::addNewCar() {
 		std::cout << "New car added successfully." << std::endl;
 	}
 
+}
+
+void AdminInterface::updateCarDetails() {
+	if (db == nullptr) {
+		std::cerr << "Database connection is not initialized.\n";
+		return;
+	}
+	
+	int carID;
+	std::cout << "Enter the ID of the car you want to update: ";
+	std::cin >> carID;
+
+	//You might want to fetch and display the current details of the car here
+	
+	std::string make, model;
+	int year, mileage;
+	bool isAvailable;
+	int minRentPeriod, maxRentPeriod;
+	std::string tempInput; //Temporary string to hold input
+
+	//Getting updated car details from the admin
+	std::cout << "Enter new Car Make (leave blank to keep current): ";
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	std::getline(std::cin, make);
+
+	std::cout << "Enter new Car Model (leave blank to keep current): ";
+	std::getline(std::cin, model);
+
+	std::cout << "Enter new Car Year (leave blank to keep current): ";
+	std::getline(std::cin, tempInput);
+	if (!tempInput.empty()) {
+		year = std::stoi(tempInput); //Convert string to int
+	}
+
+	std::cout << "Enter new Mileage (leave blank to keep current): ";
+	std::getline(std::cin, tempInput);
+	if (!tempInput.empty()) {
+		mileage = std::stoi(tempInput);
+	}
+
+	std::cout << "Is the car available (1 for Yes, 0 for No, leave blank to keep current): ";
+	std::getline(std::cin, tempInput);
+	if (!tempInput.empty()) {
+		isAvailable = tempInput == "1";
+	}
+
+	std::cout << "Enter the Minimum Rent Period (days, leave blank to keep current): ";
+	std::getline(std::cin, tempInput);
+	if (!tempInput.empty()) {
+		minRentPeriod = std::stoi(tempInput);
+	}
+
+	std::cout << "Enter Maximum Rent Period (days, leave blank to keep current): ";
+	std::getline(std::cin, tempInput);
+	if (!tempInput.empty()) {
+		maxRentPeriod = std::stoi(tempInput);
+	}
 }
