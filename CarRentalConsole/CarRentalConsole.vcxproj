@@ -130,6 +130,7 @@
     <ClCompile Include="..\..\..\Users\tandu\OneDrive\Documents\3.SQLLite C++\sqlite-amalgamation-3440200\sqlite3.c" />
     <ClCompile Include="AdminInterface.cpp" />
     <ClCompile Include="CarRentalConsole.cpp" />
+    <ClCompile Include="DatabaseManager.cpp" />
     <ClCompile Include="UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminInterface.h" />
+    <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
