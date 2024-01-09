@@ -20,6 +20,9 @@ void AdminInterface::showMenu() {
 	if (input == 1) {
 		addNewCar();
 	}
+	else if (input == 2) {
+		updateCarDetails();
+	}
 
 }
 
@@ -79,19 +82,23 @@ void AdminInterface::updateCarDetails() {
 	
 	int carID;
 	std::cout << "Enter the ID of the car you want to update: ";
-	std::cin >> carID;
+	if (!(std::cin >> carID)) {
+		std::cerr << "Invalid input for car ID .\n";
+		std::cin.clear();
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		return;
+	};
 
 	//You might want to fetch and display the current details of the car here
 	
-	std::string make, model;
-	int year, mileage;
-	bool isAvailable;
-	int minRentPeriod, maxRentPeriod;
-	std::string tempInput; //Temporary string to hold input
+	std::string make, model, tempInput;
+	int year = 0, mileage = 0, minRentPeriod = 0, maxRentPeriod = 0;
+	bool isAvailable = false;
+
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //Clear the input buffer
 
 	//Getting updated car details from the admin
 	std::cout << "Enter new Car Make (leave blank to keep current): ";
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	std::getline(std::cin, make);
 
 	std::cout << "Enter new Car Model (leave blank to keep current): ";
@@ -100,30 +107,82 @@ void AdminInterface::updateCarDetails() {
 	std::cout << "Enter new Car Year (leave blank to keep current): ";
 	std::getline(std::cin, tempInput);
 	if (!tempInput.empty()) {
-		year = std::stoi(tempInput); //Convert string to int
+		try {
+			year = std::stoi(tempInput); //Convert string to int
+		}
+		catch (...) {
+			std::cerr << "Invalid input for year.\n";
+			return;
+		}
+		
 	}
 
 	std::cout << "Enter new Mileage (leave blank to keep current): ";
 	std::getline(std::cin, tempInput);
 	if (!tempInput.empty()) {
-		mileage = std::stoi(tempInput);
+		try {
+			mileage = std::stoi(tempInput);
+		}
+		catch (...) {
+			std::cerr << "Invalid input for mileage.\n";
+			return;
+		}
 	}
 
 	std::cout << "Is the car available (1 for Yes, 0 for No, leave blank to keep current): ";
 	std::getline(std::cin, tempInput);
 	if (!tempInput.empty()) {
 		isAvailable = tempInput == "1";
+		if (tempInput != "1" && tempInput != "0") {
+			std::cerr << "Invalid input for availability. Enter 1 or 0.\n";
+			return;
+		}
 	}
 
 	std::cout << "Enter the Minimum Rent Period (days, leave blank to keep current): ";
 	std::getline(std::cin, tempInput);
 	if (!tempInput.empty()) {
-		minRentPeriod = std::stoi(tempInput);
+		try {
+			minRentPeriod = std::stoi(tempInput);
+		}
+		catch (...) {
+			std::cerr << "Invalid input for minimum rent period.\n";
+			return;
+		}
 	}
+
 
 	std::cout << "Enter Maximum Rent Period (days, leave blank to keep current): ";
 	std::getline(std::cin, tempInput);
 	if (!tempInput.empty()) {
-		maxRentPeriod = std::stoi(tempInput);
+		try {
+			maxRentPeriod = std::stoi(tempInput);
+		}
+		catch (...) {
+			std::cerr << "Invalid input for maximum rent period.\n";
+			return;
+		}
+	}
+
+	// Construct the SQL UPDATE statement
+	std::string sql = "UPDATE Car SET ";
+	sql += !make.empty() ? "Make = '" + make + "', " : "";
+	sql += !model.empty() ? "Model = '" + model + "', " : "";
+	sql += (year > 0) ? "Year = " + std::to_string(year) + ", " : "";
+	sql += (mileage > 0) ? "Mileage = " + std::to_string(mileage) + ", " : "";
+	sql += "IsAvailable = " + std::to_string(isAvailable ? 1 : 0) + ", ";
+	sql += (minRentPeriod > 0) ? "MinRentPeriod = " + std::to_string(minRentPeriod) + ", " : "";
+	sql += (maxRentPeriod > 0) ? "MaxRentPeriod = " + std::to_string(maxRentPeriod) : "";
+	sql.pop_back(); // Remove the last comma
+	sql += " WHERE CarID = " + std::to_string(carID) + ";";
+
+	// Execute SQL statement
+	char* errMsg = nullptr;
+	if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
+		std::cerr << "SQL Error: " << errMsg << std::endl;
+		sqlite3_free(errMsg);
+	}
+	else {
+		std::cout << "Car details updated successfully.\n";
 	}
 }
