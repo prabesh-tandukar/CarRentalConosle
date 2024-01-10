@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include "AdminInterface.h";
 #include "UserInterface.h";
+#include "BookingManager.h";
 
 //SQLite database file
 const char* DB_FILE = "car.db";

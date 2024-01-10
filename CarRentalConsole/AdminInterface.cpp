@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sqlite3.h>
+#include "BookingManager.h"
 
 AdminInterface::AdminInterface(sqlite3* db) : db(db) {
 	//constructore implementation
@@ -22,6 +23,11 @@ void AdminInterface::showMenu() {
 	}
 	else if (input == 2) {
 		updateCarDetails();
+	}
+	else if (input == 3) {
+
+		BookingManager bookingManger(db);
+
 	}
 
 }
@@ -170,11 +176,11 @@ void AdminInterface::updateCarDetails() {
 	sql += !model.empty() ? "Model = '" + model + "', " : "";
 	sql += (year > 0) ? "Year = " + std::to_string(year) + ", " : "";
 	sql += (mileage > 0) ? "Mileage = " + std::to_string(mileage) + ", " : "";
-	sql += "IsAvailable = " + std::to_string(isAvailable ? 1 : 0) + ", ";
-	sql += (minRentPeriod > 0) ? "MinRentPeriod = " + std::to_string(minRentPeriod) + ", " : "";
-	sql += (maxRentPeriod > 0) ? "MaxRentPeriod = " + std::to_string(maxRentPeriod) : "";
-	sql.pop_back(); // Remove the last comma
+	sql += "IsAvailable = " + std::to_string(isAvailable ? 1 : 0);
+	sql += (minRentPeriod > 0) ? ", MinRentPeriod = " + std::to_string(minRentPeriod) : "";
+	sql += (maxRentPeriod > 0) ? ", MaxRentPeriod = " + std::to_string(maxRentPeriod) : "";
 	sql += " WHERE CarID = " + std::to_string(carID) + ";";
+
 
 	// Execute SQL statement
 	char* errMsg = nullptr;
