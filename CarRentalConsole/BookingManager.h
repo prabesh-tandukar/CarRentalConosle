@@ -8,12 +8,18 @@
 
 class BookingManager
 {
+private:
+	sqlite3* db;
+	static int callback(void* NotUsed, int argc, char** argv, char** azColName);
 public:
 	BookingManager(sqlite3* db);
+	void showMenu();
 	void viewAllBookings();
 	void updateBooking();
+	void approveBooking();
+	void rejectBooking();
 	void cancelBooking();
-private: sqlite3* db;
+
 };
 
 #endif

@@ -37,7 +37,7 @@ void createTables(sqlite3* db) {
 
     const char* sqlCarTable = "CREATE TABLE IF NOT EXISTS Car (CarID INTEGER PRIMARY KEY AUTOINCREMENT, Make TEXT, Model TEXT, Year INTEGER, Mileage INTEGER, IsAvailable BOOLEAN, MinRentPeriod INTEGER, MaxRentPeriod INTEGER);";
 
-    const char* sqlRentalBookingTable = "CREATE TABLE IF NOT EXISTS RentalBooking (BookingID INTEGER PRIMARY KEY AUTOINCREMENT, CustomerID INTEGER, CarID INTEGER, StartDate TEXT, EndDate TEXT, TotalCost REAL, Status TEXT, FOREIGN KEY (CustomerID) REFERENCES User(UserID), FOREIGN KEY (CarID) REFERENCES Car(CarID));";
+    const char* sqlRentalBookingTable = "CREATE TABLE IF NOT EXISTS RentalBooking (BookingID INTEGER PRIMARY KEY AUTOINCREMENT, CustomerID INTEGER, CarID INTEGER, StartDate TEXT, EndDate TEXT, TotalCost REAL, Status TEXT DEFAULT 'Pending', FOREIGN KEY (CustomerID) REFERENCES User(UserID), FOREIGN KEY (CarID) REFERENCES Car(CarID));";
 
     executeQuery(db, sqlUserTable);
     executeQuery(db, sqlRoleTable);
@@ -123,6 +123,19 @@ bool adminExists(sqlite3* db) {
     return false;
 }
 
+//void insertTestData(sqlite3* db) {
+//    const char* sql = "INSERT INTO RentalBooking (CustomerID, CarID, StartDate, EndDate, TotalCost, Status) VALUES (1, 1, '2023-01-01', '2023-01-10', 100.00, 'Confirmed');";
+//    char* errMsg = nullptr;
+//    if (sqlite3_exec(db, sql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
+//        std::cerr << "SQL Error: " << errMsg << std::endl;
+//        sqlite3_free(errMsg);
+//    }
+//    else {
+//        std::cout << "Test data inserted successfully.\n";
+//    }
+//}
+
+
 
 
 int main()
@@ -147,8 +160,10 @@ int main()
     //View data in car table
     std::string carsql = "SELECT * FROM CAR";
     executeQuery(db, carsql.c_str());
+    std::string booksql = "SELECT * FROM RENTALBOOKING";
+    executeQuery(db, booksql.c_str());
   
-
+    //insertTestData(db);
 
     //Check if admin exists and if not, create one
     if (!adminExists(db)) {

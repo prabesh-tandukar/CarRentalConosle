@@ -16,7 +16,9 @@ void AdminInterface::showMenu() {
 	int input{ 0 };
 	std::cout << "1: Add New Car:" << std::endl;
 	std::cout << "2: Update Car:" << std::endl;
-	std::cout << "3: Manage Rental Bookings\n" << std::endl;
+	std::cout << "3: Manage Rental Bookings" << std::endl;
+	
+
 	std::cin >> input;
 	if (input == 1) {
 		addNewCar();
@@ -27,6 +29,7 @@ void AdminInterface::showMenu() {
 	else if (input == 3) {
 
 		BookingManager bookingManger(db);
+		bookingManger.showMenu();
 
 	}
 
