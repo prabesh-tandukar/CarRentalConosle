@@ -60,7 +60,7 @@ void registerUser(sqlite3* db, const std::string& username, const std::string& p
 }
 
 void registerView(sqlite3* db) {
-    std::cout << "-----WELCOME TO THE REGISTER PAGE-----";
+    std::cout << "-----WELCOME TO THE REGISTER PAGE----";
     std::string newUsername, newPassword;
     std::cout << "Enter your username: ";
     std::cin >> newUsername;
@@ -100,7 +100,7 @@ std::string authenticateUser(sqlite3* db, const std::string& username, const std
 
 std::string authenticateView(sqlite3* db) {
     bool success = false;
-    std::cout << "-----WELCOME TO THE LOGIN PAGE-----";
+    std::cout << "-*-*--*-WELCOME TO THE LOGIN PAGE-----" << std::endl;
     std::string authUsername, authPassword;
     std::cout << "Enter your username: ";
     std::cin >> authUsername;
@@ -176,7 +176,7 @@ int main()
     int input;
     while (appRunning) {
         std::cout << "----------Welcome to Easy Car Rental----------:" << std::endl;
-        std::cout << "-----Enter 1 to login and 2 to register, 3 to exit-----" << std::endl;
+        std::cout << "Enter: \n 1 to login \n 2 to register \n 3 to exit" << std::endl;
         std::cin >> input;
 
         if (input == 1) {

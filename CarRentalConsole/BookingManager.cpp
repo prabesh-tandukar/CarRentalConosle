@@ -15,7 +15,7 @@ int BookingManager::callback(void* NotUsed, int argc, char** argv, char** azColN
 
 void BookingManager::showMenu() {
 	int choice;
-	std::cout << "1: View All Bookings \n 2: Update Booking \n 3: Cancel Booking\n, 4: Approve Booking\n, 5: Reject Booking\n";
+	std::cout << "1: View All Bookings \n 2: Update Booking \n 3: Cancel Booking \n 4: Approve Booking \n 5: Reject Booking \n";
 	std::cin >> choice;
 
 	switch (choice) {
@@ -120,6 +120,14 @@ void BookingManager::approveBooking() {
 
 	std::string sql = "UPDATE RentalBooking SET Status = 'Approved' WHERE BookingID = " + std::to_string(bookingId) + ";";
 	// Execute the SQL query...
+	char* errMsg = nullptr;
+	if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
+		std::cerr << "SQL Error: " << errMsg << std::endl;
+		sqlite3_free(errMsg);
+	}
+	else {
+		std::cout << "Booking approved successfully.\n";
+	}
 }
 
 void BookingManager::rejectBooking() {
@@ -129,4 +137,12 @@ void BookingManager::rejectBooking() {
 
 	std::string sql = "UPDATE RentalBooking SET Status = 'Rejected' WHERE BookingID = " + std::to_string(bookingId) + ";";
 	// Execute the SQL query...
+	char* errMsg = nullptr;
+	if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
+		std::cerr << "SQL Error: " << errMsg << std::endl;
+		sqlite3_free(errMsg);
+	}
+	else {
+		std::cout << "Booking rejected successfully.\n";
+	}
 }
