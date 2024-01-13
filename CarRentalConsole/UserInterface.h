@@ -20,11 +20,13 @@ private:
 	int userID;
 
 	void viewAvailableCars();
-	void viewCarDetails();
+	//void viewCarDetails();
 	void bookCar();
 	bool validateCarID(int carID);
 	void viewUserBookings();
 	void retrieveAndShowBookings(const std::string& statusFilter);
+	void cancelBooking();
+	bool hasPendingBookings();
 	
 	//Other user-related methods
 };

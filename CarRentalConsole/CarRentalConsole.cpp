@@ -159,6 +159,8 @@ int main()
     //drop user table
     /*std::string dropsql = "DROP TABLE users";
     executeQuery(db, dropsql.c_str());*/
+    /*std::string dropsql = "DROP TABLE rentalbooking";
+    executeQuery(db, dropsql.c_str());*/
 
     //View data in user table
     std::string selectsql = "SELECT * FROM USERS";
