@@ -6,7 +6,7 @@
 
 AdminInterface::AdminInterface(sqlite3* db) : db(db) {
 	//constructore implementation
-	std::cout << "Debug: DB pointer address inside AdminInterface constructor: " << this->db << std::endl;
+	//std::cout << "Debug: DB pointer address inside AdminInterface constructor: " << this->db << std::endl;
 	
 }
 

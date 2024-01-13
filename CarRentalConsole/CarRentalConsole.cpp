@@ -5,6 +5,7 @@
 #include "AdminInterface.h";
 #include "UserInterface.h";
 #include "BookingManager.h";
+#include "DatabaseManager.h"
 
 //SQLite database file
 const char* DB_FILE = "car.db";
@@ -31,7 +32,7 @@ int executeQuery(sqlite3* db, const char* sql) {
 }
 
 void createTables(sqlite3* db) {
-    const char* sqlUserTable = "CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT);";
+    const char* sqlUserTable = "CREATE TABLE IF NOT EXISTS Users (UserID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT);";
     
     const char* sqlRoleTable = "CREATE TABLE IF NOT EXISTS Role (RoleID INTEGER PRIMARY KEY AUTOINCREMENT, RoleName TEXT NOT NULL);";
 
@@ -60,7 +61,7 @@ void registerUser(sqlite3* db, const std::string& username, const std::string& p
 }
 
 void registerView(sqlite3* db) {
-    std::cout << "-----WELCOME TO THE REGISTER PAGE----";
+    std::cout << "-----WELCOME TO THE REGISTER PAGE----" << std::endl;
     std::string newUsername, newPassword;
     std::cout << "Enter your username: ";
     std::cin >> newUsername;
@@ -70,19 +71,25 @@ void registerView(sqlite3* db) {
     registerUser(db, newUsername, newPassword);
 }
 
-std::string authenticateUser(sqlite3* db, const std::string& username, const std::string& password) {
-    const char* sql = "SELECT role FROM users WHERE username = ? AND password = ?;";
+struct AuthResult {
+    int userID;
+    std::string userRole;
+};
+
+AuthResult authenticateUser(sqlite3* db, const std::string& username, const std::string& password) {
+    const char* sql = "SELECT userID, role FROM users WHERE username = ? AND password = ?;";
     sqlite3_stmt* stmt;
-    std::string userRole = "";
+    AuthResult result = { -1, "" };
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
         sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 2, password.c_str(), -1, SQLITE_TRANSIENT);
 
         if (sqlite3_step(stmt) == SQLITE_ROW) {
-            const unsigned char* role = sqlite3_column_text(stmt, 0);
+            result.userID = sqlite3_column_int(stmt, 0);
+            const unsigned char* role = sqlite3_column_text(stmt, 1);
             if (role != nullptr) {
-                userRole = reinterpret_cast<const char*>(role);
+                result.userRole = reinterpret_cast<const char*>(role);
             }
         }
         else {
@@ -94,11 +101,11 @@ std::string authenticateUser(sqlite3* db, const std::string& username, const std
         std::cerr << "Failed to execute query." << std::endl;
     }
 
-    return userRole;
+    return result;
 }
  
 
-std::string authenticateView(sqlite3* db) {
+AuthResult authenticateView(sqlite3* db) {
     bool success = false;
     std::cout << "-*-*--*-WELCOME TO THE LOGIN PAGE-----" << std::endl;
     std::string authUsername, authPassword;
@@ -173,23 +180,33 @@ int main()
 
     
     bool appRunning = true;
-    int input;
+    int userID = 1;
+    std::string role;
+    
     while (appRunning) {
         std::cout << "----------Welcome to Easy Car Rental----------:" << std::endl;
         std::cout << "Enter: \n 1 to login \n 2 to register \n 3 to exit" << std::endl;
+        int input;
         std::cin >> input;
 
         if (input == 1) {
-            std::string role = authenticateView(db);
+            AuthResult authResult = authenticateView(db);
+            userID = authResult.userID;
+            role = authResult.userRole;
             if (role == "admin") {
                 //Show admin interface
                 AdminInterface adminInterface(db);
                 adminInterface.showMenu();
             }
             else if (role == "user") {
+                
+                //std::cout << "The logged in user is " << userID;
                 //Show user interface
-                UserInterface userInterface(db);
-                userInterface.showMenu();
+                UserInterface userInterface(db, userID);
+                if (userInterface.showMenu()) {
+                    userID = -1;
+                    role = "";
+                }
             }
             else {
                 std::cout << "Authentication failed.\n";
@@ -199,6 +216,7 @@ int main()
             registerView(db);
         }
         else if (input == 3) {
+            std::cout << "Exiting....\n";
             appRunning = false;
         }
         else {

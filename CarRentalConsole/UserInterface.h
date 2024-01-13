@@ -3,18 +3,29 @@
 #define USER_INTERFACE_H
 
 #include <sqlite3.h>
+#include <string>
+#include <iostream>
+
 
 class UserInterface
 {
+public:
+	UserInterface(sqlite3* db, int userID);
+	bool showMenu();
+
+	
+
 private: 
 	sqlite3* db;
-public:
-	UserInterface(sqlite3* db);
-	void showMenu();
+	int userID;
+
 	void viewAvailableCars();
+	void viewCarDetails();
 	void bookCar();
-	void viewOwnBookings();
-	void manageBooking();
+	bool validateCarID(int carID);
+	void viewUserBookings();
+	void retrieveAndShowBookings(const std::string& statusFilter);
+	
 	//Other user-related methods
 };
 

@@ -1,6 +1,7 @@
 #include "BookingManager.h"
 #include <iostream>
 
+
 BookingManager::BookingManager(sqlite3* db) : db(db) {
 	//constructor 
 }
