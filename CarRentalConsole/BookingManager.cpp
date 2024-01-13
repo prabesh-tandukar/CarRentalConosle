@@ -16,27 +16,28 @@ int BookingManager::callback(void* NotUsed, int argc, char** argv, char** azColN
 
 void BookingManager::showMenu() {
 	int choice;
-	std::cout << "1: View All Bookings \n 2: Update Booking \n 3: Cancel Booking \n 4: Approve Booking \n 5: Reject Booking \n";
-	std::cin >> choice;
+		std::cout << "1: View All Bookings \n2: Update Booking\n3: Approve Booking \n4: Reject Booking \n5: Delete Booking\n";
+		std::cin >> choice;
 
-	switch (choice) {
-	case 1:
-		viewAllBookings();
-		break;
-	case 2:
-		updateBooking();
-		break;
-	case 3:
-		cancelBooking();
-		break;
-	case 4:
-		approveBooking();
-		break;
-	case 5:
-		rejectBooking();
-		break;
-	default: std::cout << "Invalid choice. \n";
-	}
+		switch (choice) {
+		case 1:
+			viewAllBookings();
+			break;
+		case 2:
+			updateBooking();
+			break;
+		case 3:
+			cancelBooking();
+			break;
+		case 4:
+			approveBooking();
+			break;
+		case 5:
+			rejectBooking();
+			break;
+		default:
+			std::cout << "Invalid choice. \n";
+		}
 }
 
 void BookingManager::viewAllBookings() {

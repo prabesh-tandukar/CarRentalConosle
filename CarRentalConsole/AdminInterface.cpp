@@ -3,6 +3,7 @@
 #include <string>
 #include <sqlite3.h>
 #include "BookingManager.h"
+#include <limits>
 
 AdminInterface::AdminInterface(sqlite3* db) : db(db) {
 	//constructore implementation
@@ -10,29 +11,48 @@ AdminInterface::AdminInterface(sqlite3* db) : db(db) {
 	
 }
 
-void AdminInterface::showMenu() {
+bool AdminInterface::showMenu() {
 	std::cout << "\n ---Admin Menu ---\n";
-	//Implementation of admin menu
-	int input{ 0 };
-	std::cout << "1: Add New Car:" << std::endl;
-	std::cout << "2: Update Car:" << std::endl;
-	std::cout << "3: Manage Rental Bookings" << std::endl;
-	
+	int choice;
 
-	std::cin >> input;
-	if (input == 1) {
-		addNewCar();
-	}
-	else if (input == 2) {
-		updateCarDetails();
-	}
-	else if (input == 3) {
+	do {
+		std::cout << "Admin Menu: \n1.Add New Car: \n2.Update Car: \n3.Manage Rental Bookings \n4.Log out\n";
 
-		BookingManager bookingManger(db);
-		bookingManger.showMenu();
+		if (std::cin >> choice) {
+			// Input is successful, clear any potential error flags
+			std::cin.clear();
 
-	}
-
+			switch (choice) {
+			case 1: {
+				addNewCar();
+				break;
+			}
+			case 2: {
+				updateCarDetails();
+				break;
+			}
+			case 3: {
+				BookingManager bookingManger(db);
+				bookingManger.showMenu();
+				break;
+			}
+			case 4: {
+				std::cout << "Logging out\n";
+				return true;
+			}
+			default: {
+				std::cout << "Invalid Choice. Please Try again\n";
+				break;
+			}
+			}
+		}
+		else {
+			// Input is not an integer, clear the error and discard the invalid input
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			std::cout << "Invalid input. Please enter a number.\n";
+		}
+	} while (true);
 }
 
 void AdminInterface::addNewCar() {
