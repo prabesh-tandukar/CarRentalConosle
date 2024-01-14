@@ -6,6 +6,10 @@
 #include "Car.h"
 #include "CarManager.h"
 
+
+UserInterface::UserInterface(sqlite3* db, int userID) : db(db), userID(userID), carManager(db) {
+	//Constructor implementation
+}
 static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 	for (int i = 0; i < argc; i++) {
 		std::cout << azColName[i] << " : " << (argv[i] ? argv[i] : "NULL") << "\n";
@@ -14,14 +18,11 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 	return 0;
 }
 
-UserInterface::UserInterface(sqlite3* db, int userID) : db(db), userID(userID), carManager(db) {
-	//Constructor implementation
-}
 
 bool UserInterface::showMenu() {
 	int choice;
 	do {
-		std::cout << "User Menu :\n1. View Available Cars\n2. View Bookings\n3. Book a car\n4. Cancel booking\n5. Log Out\n";
+		std::cout << "User Menu :\n1. View Available Cars\n2. View Bookings\n3. Book a car\n4. Cancel booking\n5. Search for Cars\n6. Log Out\n";
 		std::cin >> choice;
 		//Implementation of user menu
 
@@ -39,6 +40,9 @@ bool UserInterface::showMenu() {
 			cancelBooking();
 			break;
 		case 5:
+			searchCars();
+			break;
+		case 6:
 			std::cout << "Loggin out....\n";
 			return true;
 		default:
@@ -302,12 +306,15 @@ void UserInterface::displayCars(const std::vector<Car>& cars) {
 		std::cout << "No cars found matching the criteria.\n";
 	}
 	else {
+		std::cout << "-------------------------------------------------\n";
 		std::cout << "Search Results:\n";
 		for (const auto& car : cars) {
+			
 			std::cout << "CarID: " << car.carID << ", Make: " << car.make << ", Model: " << car.model
 				<< ", Year: " << car.year << ", Mileage: " << car.mileage << ", Availability: "
 				<< (car.isAvailable ? "Yes" : "No") << "\n";
 		}
+		std::cout << "-------------------------------------------------\n";
 	}
 }
 

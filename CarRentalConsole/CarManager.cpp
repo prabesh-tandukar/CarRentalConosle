@@ -1,7 +1,7 @@
 #include "CarManager.h"
 #include <iostream>
 
-CarManager::CarManager(){}
+CarManager::CarManager(sqlite3* db) : db(db){}
 
 std::vector<Car> CarManager::searchCars(const std::string& make, const std::string& model, bool availableOnly) {
     // Construct SQL query based on search criteria
