@@ -2,6 +2,9 @@
 #include <iostream>
 #include <string>
 #include <sqlite3.h>
+#include <vector>
+#include "Car.h"
+#include "CarManager.h"
 
 
 static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
@@ -294,3 +297,40 @@ void UserInterface::cancelBooking() {
 		std::cerr << "Failed to prepare the validate booking statement.\n";
 	}
 }
+
+void UserInterface::displayCars(const std::vector<Car>& cars) {
+	if (cars.empty()) {
+		std::cout << "No cars found matching the criteria.\n";
+	}
+	else {
+		std::cout << "Search Results:\n";
+		for (const auto& car : cars) {
+			std::cout << "CarID: " << car.carID << ", Make: " << car.make << ", Model: " << car.model
+				<< ", Year: " << car.year << ", Mileage: " << car.mileage << ", Availability: "
+				<< (car.isAvailable ? "Yes" : "No") << "\n";
+		}
+	}
+}
+
+void UserInterface::searchCars() {
+	std::string make, model;
+	bool availableOnly;
+
+	//Get search criteria from the user
+	std::cout << "Enter make (or leave empty):";
+	std::cin.ignore();
+	std::getline(std::cin, make);
+
+	std::cout << "Enter model (or leave empty):";
+	std::getline(std::cin, model);
+
+	std::cout << "Search for available cars only? (1 for Yes, 0 for No): ";
+	std::cin >> availableOnly;
+
+	//Call the CarManager function to search for cars
+	std::vector<Car> searchResults = carManager.searchCars(make, model, availableOnly);
+
+	// Display the search results
+	displayCars(searchResults);
+}
+

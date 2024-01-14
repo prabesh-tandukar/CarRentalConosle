@@ -27,7 +27,8 @@ private:
 	void retrieveAndShowBookings(const std::string& statusFilter);
 	void cancelBooking();
 	bool hasPendingBookings();
-	
+	void searchCars();
+	void displayCars();
 	//Other user-related methods
 };
 
