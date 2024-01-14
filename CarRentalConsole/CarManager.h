@@ -9,6 +9,7 @@
 class CarManager {
 public:
     CarManager(sqlite3* db);
+    CarManager();
     std::vector<Car> getAllCars();
     std::vector<Car> searchCars(const std::string& make, const std::string& model, bool availableOnly);
 

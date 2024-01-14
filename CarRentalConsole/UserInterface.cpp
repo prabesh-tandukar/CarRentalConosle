@@ -6,7 +6,6 @@
 #include "Car.h"
 #include "CarManager.h"
 
-
 static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 	for (int i = 0; i < argc; i++) {
 		std::cout << azColName[i] << " : " << (argv[i] ? argv[i] : "NULL") << "\n";
@@ -15,7 +14,7 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 	return 0;
 }
 
-UserInterface::UserInterface(sqlite3* db, int userID) : db(db), userID(userID) {
+UserInterface::UserInterface(sqlite3* db, int userID) : db(db), userID(userID), carManager(db) {
 	//Constructor implementation
 }
 

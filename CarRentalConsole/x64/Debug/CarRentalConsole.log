@@ -1,2 +1,10 @@
-﻿  AdminInterface.cpp
-  CarRentalConsole.vcxproj -> C:\2. Learning CPP\CarRentalConsole\x64\Debug\CarRentalConsole.exe
+﻿  CarManager.cpp
+  CarRentalConsole.cpp
+C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(6,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(7,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  UserInterface.cpp
+  Generating Code...
+CarManager.obj : error LNK2019: unresolved external symbol "private: static int __cdecl CarManager::carCallback(void *,int,char * *,char * *)" (?carCallback@CarManager@@CAHPEAXHPEAPEAD1@Z) referenced in function "public: class std::vector<class Car,class std::allocator<class Car> > __cdecl CarManager::searchCars(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,bool)" (?searchCars@CarManager@@QEAA?AV?$vector@VCar@@V?$allocator@VCar@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@0_N@Z)
+UserInterface.obj : error LNK2019: unresolved external symbol "public: __cdecl CarManager::CarManager(struct sqlite3 *)" (??0CarManager@@QEAA@PEAUsqlite3@@@Z) referenced in function "public: __cdecl UserInterface::UserInterface(struct sqlite3 *,int)" (??0UserInterface@@QEAA@PEAUsqlite3@@H@Z)
+C:\2. Learning CPP\CarRentalConsole\x64\Debug\CarRentalConsole.exe : fatal error LNK1120: 2 unresolved externals
