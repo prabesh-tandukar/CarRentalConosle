@@ -61,7 +61,7 @@ void registerUser(sqlite3* db, const std::string& username, const std::string& p
 }
 
 void registerView(sqlite3* db) {
-    std::cout << "-----WELCOME TO THE REGISTER PAGE----" << std::endl;
+    std::cout << "-------WELCOME TO THE REGISTER PAGE------" << std::endl;
     std::string newUsername, newPassword;
     std::cout << "Enter your username: ";
     std::cin >> newUsername;
@@ -107,7 +107,7 @@ AuthResult authenticateUser(sqlite3* db, const std::string& username, const std:
 
 AuthResult authenticateView(sqlite3* db) {
     bool success = false;
-    std::cout << "-*-*--*-WELCOME TO THE LOGIN PAGE-----" << std::endl;
+    std::cout << "-*-*-*-*-WELCOME TO THE LOGIN PAGE-*-*-*-*-" << std::endl;
     std::string authUsername, authPassword;
     std::cout << "Enter your username: ";
     std::cin >> authUsername;

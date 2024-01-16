@@ -12,11 +12,11 @@ AdminInterface::AdminInterface(sqlite3* db) : db(db) {
 }
 
 bool AdminInterface::showMenu() {
-	std::cout << "\n ---Admin Menu ---\n";
+	std::cout << "\n -------Admin Menu-------\n";
 	int choice;
 
 	do {
-		std::cout << "Admin Menu: \n1.Add New Car: \n2.Update Car: \n3.Manage Rental Bookings \n4.Log out\n";
+		std::cout << "1.Add New Car: \n2.Update Car: \n3.Manage Rental Bookings \n4.Log out\n";
 
 		if (std::cin >> choice) {
 			// Input is successful, clear any potential error flags
