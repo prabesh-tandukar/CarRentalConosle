@@ -16,7 +16,7 @@ bool AdminInterface::showMenu() {
 	int choice;
 
 	do {
-		std::cout << "1.Add New Car: \n2.Update Car: \n3.Manage Rental Bookings \n4.Log out\n";
+		std::cout << "|1.Add New Car: \n|2.Update Car: \n|3.Manage Rental Bookings \n|4.Log out\n";
 
 		if (std::cin >> choice) {
 			// Input is successful, clear any potential error flags
