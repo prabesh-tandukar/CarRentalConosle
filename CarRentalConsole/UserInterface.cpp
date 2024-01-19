@@ -134,6 +134,48 @@ void UserInterface::bookCar() {
 	}
 }
 
+void UserInterface::bookCar(const Car& selectedCar) {
+	std::string startDate, endDate;
+
+	// Display details of the selected car
+	std::cout << "Selected Car Details:\n"
+		<< "CarID: " << selectedCar.carID << "\n"
+		<< "Make: " << selectedCar.make << "\n"
+		<< "Model: " << selectedCar.model << "\n"
+		<< "Year: " << selectedCar.year << "\n"
+		<< "Mileage: " << selectedCar.mileage << "\n"
+		<< "Availability: " << (selectedCar.isAvailable ? "Yes" : "No") << "\n\n";
+
+	std::cout << "Enter the start date (YYYY-MM-DD): ";
+	std::cin >> startDate;
+
+	std::cout << "Enter the end date (YYYY-MM-DD): ";
+	std::cin >> endDate;
+
+	// Perform the booking
+	std::string insertBookingSQL = "INSERT INTO RentalBooking (CustomerID, CarID, StartDate, EndDate, Status) VALUES (?, ?, ?, ?, 'Pending');";
+	sqlite3_stmt* stmt;
+
+	if (sqlite3_prepare_v2(db, insertBookingSQL.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+		sqlite3_bind_int(stmt, 1, userID);
+		sqlite3_bind_int(stmt, 2, selectedCar.carID);
+		sqlite3_bind_text(stmt, 3, startDate.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 4, endDate.c_str(), -1, SQLITE_STATIC);
+
+		if (sqlite3_step(stmt) == SQLITE_DONE) {
+			std::cout << "Booking successful. Your request is pending approval.\n";
+		}
+		else {
+			std::cerr << "Booking failed. Please try again.\n";
+		}
+		sqlite3_finalize(stmt);
+	}
+	else {
+		std::cerr << "Failed to prepare the booking statement.\n";
+	}
+}
+
+
 
 
 void UserInterface::viewUserBookings() {
@@ -333,10 +375,38 @@ void UserInterface::searchCars() {
 	std::cout << "Search for available cars only? (1 for Yes, 0 for No): ";
 	std::cin >> availableOnly;
 
+
 	//Call the CarManager function to search for cars
 	std::vector<Car> searchResults = carManager.searchCars(make, model, availableOnly);
 
 	// Display the search results
 	displayCars(searchResults);
+
+	//Book a car if there are search results
+	if (!searchResults.empty()) {
+		std::cout << "Do you want to book a car ? (1 for Yes, 0 for No): ";
+		int choice;
+		std::cin >> choice;
+
+		if (choice == 1) {
+			int carIndex;
+			std::cout << "Enter the index of the car you want to book: ";
+			std::cin >> carIndex;
+
+			if (carIndex >= 0 && carIndex < searchResults.size()) {
+				//Book the selected car
+				bookCar(searchResults[carIndex]);
+			}
+			else {
+				std::cerr << "Invalid car index. Please enter a valid index." << std::endl;
+			}
+		}
+		else {
+			std::cout << "Booking canceled." << std::endl;
+		}
+	}
+	else {
+		std::cout << "No cars found matching the criteria. " << std::endl;
+	}
 }
 

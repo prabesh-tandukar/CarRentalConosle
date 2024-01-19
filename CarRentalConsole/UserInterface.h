@@ -23,6 +23,7 @@ private:
 	void viewAvailableCars();
 	//void viewCarDetails();
 	void bookCar();
+	void bookCar(const Car& selectedCar);
 	bool validateCarID(int carID);
 	void viewUserBookings();
 	void retrieveAndShowBookings(const std::string& statusFilter);

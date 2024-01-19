@@ -32,7 +32,7 @@ int executeQuery(sqlite3* db, const char* sql) {
 }
 
 void createTables(sqlite3* db) {
-    const char* sqlUserTable = "CREATE TABLE IF NOT EXISTS Users (UserID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT);";
+    const char* sqlUserTable = "CREATE TABLE IF NOT EXISTS Users (UserID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, role TEXT DEFAULT 'user');";
     
     const char* sqlRoleTable = "CREATE TABLE IF NOT EXISTS Role (RoleID INTEGER PRIMARY KEY AUTOINCREMENT, RoleName TEXT NOT NULL);";
 
