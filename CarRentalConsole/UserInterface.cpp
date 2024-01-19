@@ -350,9 +350,9 @@ void UserInterface::displayCars(const std::vector<Car>& cars) {
 	else {
 		std::cout << "-------------------------------------------------\n";
 		std::cout << "Search Results:\n";
-		for (const auto& car : cars) {
-			
-			std::cout << "CarID: " << car.carID << ", Make: " << car.make << ", Model: " << car.model
+		for (size_t i = 0; i < cars.size(); ++i) {
+			const auto& car = cars[i];
+			std::cout << "Index: " << i <<  ", CarID: " << car.carID << ", Make: " << car.make << ", Model: " << car.model
 				<< ", Year: " << car.year << ", Mileage: " << car.mileage << ", Availability: "
 				<< (car.isAvailable ? "Yes" : "No") << "\n";
 		}
