@@ -348,7 +348,7 @@ void UserInterface::displayCars(const std::vector<Car>& cars) {
 		std::cout << "No cars found matching the criteria.\n";
 	}
 	else {
-		std::cout << "-------------------------------------------------\n";
+		std::cout << "--------------------------------------------------\n";
 		std::cout << "Search Results:\n";
 		for (size_t i = 0; i < cars.size(); ++i) {
 			const auto& car = cars[i];
