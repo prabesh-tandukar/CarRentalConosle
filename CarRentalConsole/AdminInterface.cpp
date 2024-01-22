@@ -11,11 +11,21 @@ AdminInterface::AdminInterface(sqlite3* db) : db(db) {
 	
 }
 
+void AdminInterface::clearScreen() {
+#ifdef _WIN32
+	system("cls");
+#else
+	system("clear");
+#endif // _WIN32
+}
+
 bool AdminInterface::showMenu() {
+	AdminInterface::clearScreen();
 	std::cout << "\n -------Admin Menu-------\n";
 	int choice;
 
 	do {
+		
 		std::cout << "|1.Add New Car: \n|2.Update Car: \n|3.Manage Rental Bookings \n|4.Log out\n";
 
 		if (std::cin >> choice) {

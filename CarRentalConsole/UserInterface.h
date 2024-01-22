@@ -20,7 +20,9 @@ private:
 	int userID;
 	CarManager carManager;
 
+	void clearScreen();
 	void viewAvailableCars();
+	bool isValidDate(const std::string& dateStr);
 	//void viewCarDetails();
 	void bookCar();
 	void bookCar(const Car& selectedCar);

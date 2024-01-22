@@ -5,6 +5,11 @@
 #include <vector>
 #include "Car.h"
 #include "CarManager.h"
+#include <cstdlib>
+#include <chrono>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 
 
 UserInterface::UserInterface(sqlite3* db, int userID) : db(db), userID(userID), carManager(db) {
@@ -18,10 +23,26 @@ static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
 	return 0;
 }
 
+bool UserInterface::isValidDate(const std::string& dateStr) {
+	std::tm tm = {};
+	std::istringstream ss(dateStr);
+	ss >> std::get_time(&tm, "%Y-%m-%d");
+	return !ss.fail();
+}
+
+void UserInterface::clearScreen() {
+#ifdef _WIN32
+	system("cls");
+#else
+	system("clear");
+#endif // _WIN32
+
+}
 
 bool UserInterface::showMenu() {
 	int choice;
 	do {
+		//clearScreen();
 		std::cout << "User Menu :\n1. View Available Cars\n2. View Bookings\n3. Book a car\n4. Cancel booking\n5. Search for Cars\n6. Log Out\n";
 		std::cin >> choice;
 		//Implementation of user menu
@@ -105,11 +126,15 @@ void UserInterface::bookCar() {
 		return;
 	}
 
-	std::cout << "Enter the strat date (YYYY-MM-DD): ";
-	std::cin >> startDate;
-
-	std::cout << "Enter the end date (YYYY-MM-DD): ";
-	std::cin >> endDate;
+	do {
+		std::cout << "Enter the strat date (YYYY-MM-DD): ";
+		std::cin >> startDate;
+	} while (!isValidDate(startDate));
+	do {
+		std::cout << "Enter the end date (YYYY-MM-DD): ";
+		std::cin >> endDate;
+	} while (!isValidDate(endDate));
+	
 
 	//Perform the booking
 	std::string insertBookingSQL = "INSERT INTO RentalBooking (CustomerID, CarID, StartDate, EndDate, Status) VALUES (?, ?, ?, ?, 'Pending');";

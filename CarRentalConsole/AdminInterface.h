@@ -10,6 +10,7 @@ private:
 	sqlite3* db;
 public:
 	AdminInterface(sqlite3* db);
+	void clearScreen();
 	bool showMenu();
 	void addNewCar();
 	void updateCarDetails();

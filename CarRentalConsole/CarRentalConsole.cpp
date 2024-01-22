@@ -6,9 +6,19 @@
 #include "UserInterface.h";
 #include "BookingManager.h";
 #include "DatabaseManager.h"
+#include <cstdlib>
 
 //SQLite database file
 const char* DB_FILE = "car.db";
+
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif // _WIN32
+}
+
 
 // Callback function for executing SQL statements
 static int callback(void* NotUsed, int argc, char** argv, char** azColName) {
@@ -61,6 +71,7 @@ void registerUser(sqlite3* db, const std::string& username, const std::string& p
 }
 
 void registerView(sqlite3* db) {
+    clearScreen();
     std::cout << "-------WELCOME TO THE REGISTER PAGE------" << std::endl;
     std::string newUsername, newPassword;
     std::cout << "Enter your username: ";
@@ -107,6 +118,7 @@ AuthResult authenticateUser(sqlite3* db, const std::string& username, const std:
 
 AuthResult authenticateView(sqlite3* db) {
     bool success = false;
+    clearScreen();
     std::cout << "-*-*-*-*-WELCOME TO THE LOGIN PAGE-*-*-*-*-" << std::endl;
     std::string authUsername, authPassword;
     std::cout << "Enter your username: ";
@@ -186,7 +198,8 @@ int main()
     std::string role;
     
     while (appRunning) {
-        std::cout << "----------Welcome to Easy Car Rental----------:" << std::endl;
+        clearScreen();
+        std::cout << "----------Welcome to Easy Car Rental ----------:" << std::endl;
         std::cout << "Enter: \n 1 to login \n 2 to register \n 3 to exit" << std::endl;
         int input;
         std::cin >> input;
