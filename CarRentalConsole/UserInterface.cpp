@@ -112,10 +112,13 @@ bool UserInterface::validateCarID(int carID) {
 
 void UserInterface::bookCar() {
 	int carID;
-	std::string startDate, endDate;
+	std::string startDateStr, endDateStr;
 
 	//Display available cars first
 	viewAvailableCars();
+
+	std::tm startDate = {};
+	std::tm endDate = {};
 
 	std::cout << "Enter the CarID you want to book: ";
 	std::cin >> carID;
@@ -126,15 +129,71 @@ void UserInterface::bookCar() {
 		return;
 	}
 
-	do {
-		std::cout << "Enter the strat date (YYYY-MM-DD): ";
-		std::cin >> startDate;
-	} while (!isValidDate(startDate));
-	do {
-		std::cout << "Enter the end date (YYYY-MM-DD): ";
-		std::cin >> endDate;
-	} while (!isValidDate(endDate));
+	//Function to get valid year within the range 2024-2030
+	auto getValidYear = [](const std::string& prompt) -> int {
+		int year;
+		do {
+			std::cout << prompt;
+			std::cin >> year;
+		} while (year < 2024 || year > 2030);
+		return year;
+		};
+
+	//Funtion to get valid month within the range 1-12
+	auto getValidMonth = [](const std::string& prompt) -> int {
+		int month;
+		do {
+			std::cout << prompt;
+			std::cin >> month;
+		} while (month < 1 || month > 12);
+		return month;
+		};
+
+	//Funtion to get valid day within the range 1-31
+	auto getValidDay = [](const std::string& prompt, int maxDay) -> int {
+		int day;
+		do {
+			std::cout << prompt;
+			std::cin >> day;
+		} while (day < 1 || day > maxDay);
+		return day;
+		};
+
+	//Get the start date components
+	startDate.tm_year = getValidYear("Enter the start year (2024-2030): ") - 1900;
+	startDate.tm_mon = getValidMonth("Enter the start month (1-12): ") - 1; //Month is 0-based
+	startDate.tm_mday = getValidDay("Enter the start day (1-31): ", 31);
+
+	//Get the end date components
+	endDate.tm_year = getValidYear("Enter the end year (2024-2030): ") - 1900;
+	endDate.tm_mon = getValidMonth("Enter the end month (1-12): ") - 1; //Month is 0-based
+	endDate.tm_mday = getValidDay("Enter the end day (1-31): ", 31);
+
+	//Convert tm sstructres to strings
+	std::ostringstream startDateStreamStr;
+	std::ostringstream endDateStreamStr;
+
+	startDateStreamStr << std::put_time(&startDate, "%Y-%m-%d");
+	endDateStreamStr << std::put_time(&endDate, "%Y-%m-%d");
+
+	startDateStr = startDateStreamStr.str();
+	endDateStr = endDateStreamStr.str();
+
 	
+	//Calculate the duration between start and end dates
+		 auto start = std::chrono::system_clock::from_time_t(std::mktime(&startDate));
+		 auto end = std::chrono::system_clock::from_time_t(std::mktime(&endDate));
+		 auto duration = std::chrono::duration_cast<std::chrono::duration<int, std::ratio<86400>>>(end - start);
+
+
+		//Calculate total days
+		int totalDays = duration.count();
+
+		//Implement your cost calculation logic based on total days 
+		//For example, a simple cost of $X per day
+		const double costPerDay = 50.0;
+		double totalCost = totalDays * costPerDay;
+
 
 	//Perform the booking
 	std::string insertBookingSQL = "INSERT INTO RentalBooking (CustomerID, CarID, StartDate, EndDate, Status) VALUES (?, ?, ?, ?, 'Pending');";
@@ -143,11 +202,17 @@ void UserInterface::bookCar() {
 	if (sqlite3_prepare_v2(db, insertBookingSQL.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
 		sqlite3_bind_int(stmt, 1, userID);
 		sqlite3_bind_int(stmt, 2, carID);
-		sqlite3_bind_text(stmt, 3, startDate.c_str(), -1, SQLITE_STATIC);
-		sqlite3_bind_text(stmt, 4, endDate.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 3, startDateStr.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 4, endDateStr.c_str(), -1, SQLITE_STATIC);
 
 		if (sqlite3_step(stmt) == SQLITE_DONE) {
+			std::cout << "-----------------------------------------------------" << std::endl;
 			std::cout << "Booking successful. Your request is pending approval.\n";
+			std::cout << "-----------------------------------------------------" << std::endl;
+			std::cout << "Total Days: " << totalDays << "\n";
+			std::cout << "-----------------------------------------------------" << std:: endl;
+			std::cout << "Total Cost: " << totalCost << "\n";
+			std::cout << "-----------------------------------------------------" << std::endl;
 		}
 		else {
 			std::cerr << "Booking failed. Please try again.\n";
