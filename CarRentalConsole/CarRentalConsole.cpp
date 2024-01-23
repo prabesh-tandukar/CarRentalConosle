@@ -7,6 +7,8 @@
 #include "BookingManager.h";
 #include "DatabaseManager.h"
 #include <cstdlib>
+#include <conio.h>
+#include "PasswordManager.h"
 
 //SQLite database file
 const char* DB_FILE = "car.db";
@@ -74,12 +76,18 @@ void registerView(sqlite3* db) {
     clearScreen();
     std::cout << "-------WELCOME TO THE REGISTER PAGE------" << std::endl;
     std::string newUsername, newPassword;
+
+    //Prompt for username
     std::cout << "Enter your username: ";
     std::cin >> newUsername;
-    std::cout << "Enter your password: ";
-    std::cin >> newPassword;
 
-    registerUser(db, newUsername, newPassword);
+    //Prompt for password
+    newPassword = PasswordManager::promptForPassword();
+
+    //Hash the entered password
+    unsigned long hashedPassword = PasswordManager::djb2Hash(newPassword);
+
+    registerUser(db, newUsername, hashedPassword);
 }
 
 struct AuthResult {
@@ -126,7 +134,24 @@ AuthResult authenticateView(sqlite3* db) {
     std::cout << "Enter your password: ";
     std::cin >> authPassword;
 
+
     return authenticateUser(db, authUsername, authPassword);
+}
+
+void promptForPassword(std::string& password) {
+    char ch;
+    std::cout << "Enter your password";
+
+    while (true) {
+        ch = _getch();
+
+        if (ch = 13) //enter key
+            break;
+
+        password.push_back(ch);
+        std::cout << "*";
+    }
+    std::cout << std::endl;
 }
 
 bool adminExists(sqlite3* db) {
