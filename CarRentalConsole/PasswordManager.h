@@ -1,5 +1,4 @@
-#ifndef PASSWORD_MANAGER_H
-#define PASSWORD_MANAGER_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -13,5 +12,3 @@ public:
 
 	static unsigned long djb2Hash(const std::string& str);
 };
-
-#endif

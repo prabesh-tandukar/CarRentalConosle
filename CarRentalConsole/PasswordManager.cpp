@@ -3,9 +3,8 @@
 #include <string>
 #include <conio.h>
 
-class PasswordManager {
-public:
-	unsigned long djb2Hash(const std::string& str) {
+
+unsigned long PasswordManager::djb2Hash(const std::string& str) {
 		unsigned long hash = 5381;
 
 		for (char c : str) {
@@ -15,7 +14,7 @@ public:
 		return hash;
 	}
 
-	static std::string promptForPassword() {
+	 std::string PasswordManager::promptForPassword() {
 		std::string password;
 		char ch;
 		std::cout << "Enter your password: ";
@@ -37,4 +36,4 @@ public:
 		std::cout << std::endl; //Move to the next line after password
 		return password;
 	}
-};
+

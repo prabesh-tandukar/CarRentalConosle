@@ -5,10 +5,11 @@
 #include "AdminInterface.h";
 #include "UserInterface.h";
 #include "BookingManager.h";
-#include "DatabaseManager.h"
+#include "DatabaseManager.h";
+#include "PasswordManager.h";
 #include <cstdlib>
 #include <conio.h>
-#include "PasswordManager.h"
+
 
 //SQLite database file
 const char* DB_FILE = "car.db";
@@ -108,14 +109,14 @@ struct AuthResult {
     std::string userRole;
 };
 
-AuthResult authenticateUser(sqlite3* db, const std::string& username, const std::string& password) {
+AuthResult authenticateUser(sqlite3* db, const std::string& username,unsigned long hashedPassword) {
     const char* sql = "SELECT userID, role FROM users WHERE username = ? AND password = ?;";
     sqlite3_stmt* stmt;
     AuthResult result = { -1, "" };
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
         sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, password.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int64(stmt, 2, static_cast<sqlite3_int64>(hashedPassword));
 
         if (sqlite3_step(stmt) == SQLITE_ROW) {
             result.userID = sqlite3_column_int(stmt, 0);
@@ -152,7 +153,7 @@ AuthResult authenticateView(sqlite3* db) {
 
 
 
-    return authenticateUser(db, authUsername, hasedPassword);
+    return authenticateUser(db, authUsername, hashedPassword);
 }
 
 void promptForPassword(std::string& password) {
@@ -212,8 +213,8 @@ int main()
 
     //drop user table
     /*std::string dropsql = "DROP TABLE users";
-    executeQuery(db, dropsql.c_str());*/
-    /*std::string dropsql = "DROP TABLE rentalbooking";
+    executeQuery(db, dropsql.c_str())*/;
+   /* std::string dropsql = "DROP TABLE rentalbooking";
     executeQuery(db, dropsql.c_str());*/
 
     //View data in user table
@@ -230,7 +231,9 @@ int main()
 
     //Check if admin exists and if not, create one
     if (!adminExists(db)) {
-        std::string adminSQL = "INSERT INTO users(username, password, role) VALUES ('admin', 'admin', 'admin');";
+        unsigned long hashedPassword = PasswordManager::djb2Hash("admin");
+
+        std::string adminSQL = "INSERT INTO users(username, password, role) VALUES ('admin', '" + std::to_string(hashedPassword) + "', 'admin');";
         executeQuery(db, adminSQL.c_str());
     }
 
@@ -240,7 +243,7 @@ int main()
     std::string role;
     
     while (appRunning) {
-        clearScreen();
+        //clearScreen();
         std::cout << "----------Welcome to Easy Car Rental ----------:" << std::endl;
         std::cout << "Enter: \n 1 to login \n 2 to register \n 3 to exit" << std::endl;
         int input;
