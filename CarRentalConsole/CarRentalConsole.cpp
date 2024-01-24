@@ -59,16 +59,29 @@ void createTables(sqlite3* db) {
 }
 
 //Function to register a user
-void registerUser(sqlite3* db, const std::string& username, const std::string& password) {
+void registerUser(sqlite3* db, const std::string& username, unsigned long hashedPassword) {
     std::string defaultRole = "user"; //Default role for new users
-    std::string sql = "INSERT INTO users (username, password, role) VALUES ('" + username + "', '" + password + "' , '" + defaultRole + "' ); ";
-    int rc = executeQuery(db, sql.c_str());
+    std::string sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?); ";
+    //int rc = executeQuery(db, sql.c_str());
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_int64(stmt, 2, static_cast<sqlite3_int64>(hashedPassword));
+        sqlite3_bind_text(stmt, 3, defaultRole.c_str(), -1, SQLITE_STATIC);
 
-    if (rc == SQLITE_OK) {
-        std::cout << "User registered successfully. " << std::endl;
+        //Execute the statement
+        if (sqlite3_step(stmt) == SQLITE_DONE) {
+            std::cout << "User regsitered successfully. \n";
+        }
+        else {
+            std::cerr << "Failed to register user. \n";
+        }
+
+        //Finalize the statement to release resources
+        sqlite3_finalize(stmt);
     }
     else {
-        std::cerr << "Failed to register user. " << std::endl;
+        std::cerr << "Failed to prepare the SQL statment. \n";
     }
 }
 
