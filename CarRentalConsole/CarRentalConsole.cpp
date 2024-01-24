@@ -144,11 +144,15 @@ AuthResult authenticateView(sqlite3* db) {
     std::string authUsername, authPassword;
     std::cout << "Enter your username: ";
     std::cin >> authUsername;
-    std::cout << "Enter your password: ";
-    std::cin >> authPassword;
+    // Prompt for password using PasswordManager
+    authPassword = PasswordManager::promptForPassword();
+
+    // Hash the entered password
+    unsigned long hashedPassword = PasswordManager::djb2Hash(authPassword);
 
 
-    return authenticateUser(db, authUsername, authPassword);
+
+    return authenticateUser(db, authUsername, hasedPassword);
 }
 
 void promptForPassword(std::string& password) {
