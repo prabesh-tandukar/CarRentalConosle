@@ -243,16 +243,16 @@ int main()
     executeQuery(db, dropcarsql.c_str());*/
 
     //View data in user table
-    std::string selectsql = "SELECT * FROM USERS";
-    int outp = executeQuery(db, selectsql.c_str());
+    /*std::string selectsql = "SELECT * FROM USERS";
+    int outp = executeQuery(db, selectsql.c_str());*/
 
     //View data in car table
-    std::string carsql = "SELECT * FROM CAR";
+    /*std::string carsql = "SELECT * FROM CAR";
     executeQuery(db, carsql.c_str());
     std::string booksql = "SELECT * FROM RENTALBOOKING";
     executeQuery(db, booksql.c_str()); 
     std::string rolesql = "SELECT * FROM ROLE";
-    executeQuery(db, rolesql.c_str());
+    executeQuery(db, rolesql.c_str());*/
   
     //insertTestData(db);
 

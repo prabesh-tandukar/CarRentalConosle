@@ -108,7 +108,7 @@ void AdminInterface::addNewCar() {
 	//Constructing the SQL INSERT statement
 	std::string sql = "INSERT INTO Car (Make, Model, Year, Mileage, IsAvailable, MinRentPeriod, MaxRentPeriod) VALUES ('" + make + "', '" + model + "', " + std::to_string(year) + ", " + std::to_string(mileage) + ", " + std::to_string(isAvailable) + ", " + std::to_string(minRentPeriod) + ", " + std::to_string(maxRentPeriod) + ");";
 
-	std::cout << "\nExecuting SQL: " << sql << std::endl; //Debugging output
+	//std::cout << "\nExecuting SQL: " << sql << std::endl; //Debugging output
 
 	//Execute SQL staement
 	char* errMsg = nullptr;
@@ -127,11 +127,40 @@ void AdminInterface::updateCarDetails() {
 		std::cerr << "Database connection is not initialized.\n";
 		return;
 	}
-	
+
+	//Display the list of cars with IDs and makes
+	std::cout << "\n+---------------------------------+\n";
+	std::cout << "|   List of Cars for Update       |\n";
+	std::cout << "+---------------------------------+\n";
+
+	std::string listCarsSQL = "SELECT CarID, Make, Model FROM Car;";
+	sqlite3_stmt* listStmt = nullptr;
+
+	if (sqlite3_prepare_v2(db, listCarsSQL.c_str(), -1, &listStmt, nullptr) == SQLITE_OK) {
+		int result = sqlite3_step(listStmt);
+		if (result == SQLITE_ROW) {
+			do {
+				std::cout << "CarID: " << sqlite3_column_int(listStmt, 0)
+					<< " | Make: " << sqlite3_column_text(listStmt, 1)
+					<< " | Model: " << sqlite3_column_text(listStmt, 2)
+					<< "\n";
+			} while (sqlite3_step(listStmt) == SQLITE_ROW);
+		}
+		else {
+			std::cout << "No cars available for update.\n";
+			sqlite3_finalize(listStmt);
+			return;
+		}
+		sqlite3_finalize(listStmt);
+	}
+	else {
+		std::cerr << "Failed to prepare the list of cars statement.\n";
+		return;
+	}
+
+	std::cout << "+--------------------------------------+\n";
+
 	int carID;
-	std::cout << "\n+-----------------------------+\n";
-	std::cout << "|   Update Car Details       |\n";
-	std::cout << "+-----------------------------+\n";
 	std::cout << "Enter the ID of the car you want to update: ";
 	if (!(std::cin >> carID)) {
 		std::cerr << "Invalid input for car ID .\n";
