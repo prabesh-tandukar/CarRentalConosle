@@ -19,11 +19,10 @@ private:
 	sqlite3* db;
 	int userID;
 	CarManager carManager;
-
+	void showMenuHeader();
 	void clearScreen();
 	void viewAvailableCars();
 	bool isValidDate(const std::string& dateStr);
-	//void viewCarDetails();
 	void bookCar();
 	void bookCar(const Car& selectedCar);
 	bool validateCarID(int carID);
@@ -33,7 +32,11 @@ private:
 	bool hasPendingBookings();
 	void searchCars();
 	void displayCars(const std::vector<Car>& cars);
-	//Other user-related methods
+	void viewAvailableCarsHeader();
+	void validateCarIDHeader();
+	void bookCarHeader();
+	void viewUserBookingsHeader();
+
 };
 
 #endif //USER_INTERFACE_H

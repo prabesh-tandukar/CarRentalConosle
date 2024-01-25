@@ -21,12 +21,17 @@ void AdminInterface::clearScreen() {
 
 bool AdminInterface::showMenu() {
 	AdminInterface::clearScreen();
-	std::cout << "\n -------Admin Menu-------\n";
+	std::cout << "\n----------Admin Menu---------\n";
 	int choice;
 
 	do {
-		
-		std::cout << "|1.Add New Car: \n|2.Update Car: \n|3.Manage Rental Bookings \n|4.Log out\n";
+		std::cout << "+---------------------------+\n";
+		std::cout << "| 1. Add New Car            |\n";
+		std::cout << "| 2. Update Car             |\n";
+		std::cout << "| 3. Manage Rental Bookings |\n";
+		std::cout << "| 4. Log out                |\n";
+		std::cout << "+---------------------------+\n";
+		std::cout << "Enter your choice: ";
 
 		if (std::cin >> choice) {
 			// Input is successful, clear any potential error flags
@@ -77,6 +82,9 @@ void AdminInterface::addNewCar() {
 
 
 	//Getting car details from the admin
+	std::cout << "\n+-----------------------+\n";
+	std::cout << "|   Add New Car         |\n";
+	std::cout << "+-----------------------+\n";
 	std::cout << "Enter Car Make:";
 	std::cin >> make;
 	std::cout << "Enter Car Model: ";
@@ -91,6 +99,7 @@ void AdminInterface::addNewCar() {
 	std::cin >> minRentPeriod;
 	std::cout << "Enter Maximum Rent Period (days): ";
 	std::cin >> maxRentPeriod;
+	std::cout << "+-----------------------+\n";
 
 
 	// Convert bool to int for SQLite
@@ -99,7 +108,7 @@ void AdminInterface::addNewCar() {
 	//Constructing the SQL INSERT statement
 	std::string sql = "INSERT INTO Car (Make, Model, Year, Mileage, IsAvailable, MinRentPeriod, MaxRentPeriod) VALUES ('" + make + "', '" + model + "', " + std::to_string(year) + ", " + std::to_string(mileage) + ", " + std::to_string(isAvailable) + ", " + std::to_string(minRentPeriod) + ", " + std::to_string(maxRentPeriod) + ");";
 
-	std::cout << "Executing SQL: " << sql << std::endl; //Debugging output
+	std::cout << "\nExecuting SQL: " << sql << std::endl; //Debugging output
 
 	//Execute SQL staement
 	char* errMsg = nullptr;
@@ -120,6 +129,9 @@ void AdminInterface::updateCarDetails() {
 	}
 	
 	int carID;
+	std::cout << "\n+-----------------------------+\n";
+	std::cout << "|   Update Car Details       |\n";
+	std::cout << "+-----------------------------+\n";
 	std::cout << "Enter the ID of the car you want to update: ";
 	if (!(std::cin >> carID)) {
 		std::cerr << "Invalid input for car ID .\n";
@@ -224,4 +236,5 @@ void AdminInterface::updateCarDetails() {
 	else {
 		std::cout << "Car details updated successfully.\n";
 	}
+	std::cout << "+-----------------------------+\n";
 }

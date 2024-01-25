@@ -1,7 +1,2 @@
-﻿  CarRentalConsole.cpp
-C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(6,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(7,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(8,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\2. Learning CPP\CarRentalConsole\CarRentalConsole\CarRentalConsole.cpp(9,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+﻿  AdminInterface.cpp
   CarRentalConsole.vcxproj -> C:\2. Learning CPP\CarRentalConsole\x64\Debug\CarRentalConsole.exe

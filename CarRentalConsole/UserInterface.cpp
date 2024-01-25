@@ -39,11 +39,23 @@ void UserInterface::clearScreen() {
 
 }
 
+void UserInterface::showMenuHeader() {
+	std::cout << "==========================================\n";
+	std::cout << "           User Menu\n";
+	std::cout << "==========================================\n";
+}
+
 bool UserInterface::showMenu() {
 	int choice;
 	do {
 		//clearScreen();
-		std::cout << "User Menu :\n1. View Available Cars\n2. View Bookings\n3. Book a car\n4. Cancel booking\n5. Search for Cars\n6. Log Out\n";
+		showMenuHeader();
+		std::cout << "1. View Available Cars\n"
+			<< "2. View Bookings\n"
+			<< "3. Book a Car\n"
+			<< "4. Cancel Booking\n"
+			<< "5. Search for Cars\n"
+			<< "6. Log Out\n";
 		std::cin >> choice;
 		//Implementation of user menu
 
@@ -73,6 +85,12 @@ bool UserInterface::showMenu() {
 	} while (true);
 }
 
+void UserInterface::viewAvailableCarsHeader() {
+	std::cout << "==========================================\n";
+	std::cout << "         View Available Cars\n";
+	std::cout << "==========================================\n";
+}
+
 void UserInterface::viewAvailableCars() {
 	std::string sql = "SELECT CarID, Make, Model, IsAvailable FROM Car WHERE IsAvailable = 1;";
 
@@ -82,10 +100,17 @@ void UserInterface::viewAvailableCars() {
 		std::cerr << "SQL Error: " << errMsg << std::endl;
 		sqlite3_free(errMsg);
 	}
+	std::cout << "==========================================\n";
 }
 
+void UserInterface::validateCarIDHeader() {
+	std::cout << "==========================================\n";
+	std::cout << "          Validate CarID\n";
+	std::cout << "==========================================\n";
+}
 
 bool UserInterface::validateCarID(int carID) {
+	validateCarIDHeader();
 	std::string sql = "SELECT * FROM Car WHERE CarID = ? AND IsAvailable = 1;";
 	sqlite3_stmt* stmt;
 
@@ -110,7 +135,14 @@ bool UserInterface::validateCarID(int carID) {
 	return false;
 }
 
+void UserInterface::bookCarHeader() {
+	std::cout << "==========================================\n";
+	std::cout << "             Book a Car\n";
+	std::cout << "==========================================\n";
+}
+
 void UserInterface::bookCar() {
+	bookCarHeader();
 	int carID;
 	std::string startDateStr, endDateStr;
 
@@ -210,7 +242,7 @@ void UserInterface::bookCar() {
 			std::cout << "Booking successful. Your request is pending approval.\n";
 			std::cout << "-----------------------------------------------------" << std::endl;
 			std::cout << "Total Days: " << totalDays << "\n";
-			std::cout << "-----------------------------------------------------" << std:: endl;
+			std::cout << "-----------------------------------------------------" << std::endl;
 			std::cout << "Total Cost: " << totalCost << "\n";
 			std::cout << "-----------------------------------------------------" << std::endl;
 		}
@@ -222,6 +254,7 @@ void UserInterface::bookCar() {
 	else {
 		std::cerr << "Failed to prepare the booking statement.\n";
 	}
+	std::cout << "==========================================\n";
 }
 
 void UserInterface::bookCar(const Car& selectedCar) {
@@ -265,20 +298,24 @@ void UserInterface::bookCar(const Car& selectedCar) {
 	}
 }
 
-
-
+void UserInterface::viewUserBookingsHeader() {
+	std::cout << "==========================================\n";
+	std::cout << "           View User Bookings\n";
+	std::cout << "==========================================\n";
+}
 
 void UserInterface::viewUserBookings() {
-
 	int choice;
 	std::string statusFilter;
 
+	viewUserBookingsHeader();
+
 	std::cout << "Select booking type:\n";
-	std::cout << "1. All Bookings\n";
-	std::cout << "2. Pending Bookings\n";
-	std::cout << "3. Confirmed Bookings\n";
-	std::cout << "4. Rejected Bookings\n";
-	std::cout << "5. Cancelled Bookings\n";
+	std::cout << "1. All Bookings\n"
+		<< "2. Pending Bookings\n"
+		<< "3. Confirmed Bookings\n"
+		<< "4. Rejected Bookings\n"
+		<< "5. Cancelled Bookings\n";
 	std::cin >> choice;
 
 	switch (choice) {
@@ -302,9 +339,10 @@ void UserInterface::viewUserBookings() {
 		return;
 	}
 
-	// Now call the function that actually retrieves and shows the bookings
-   // with the specified filter
+	//function that retrieves and shows the bookings with the specified filter
 	retrieveAndShowBookings(statusFilter);
+
+	std::cout << "==========================================\n";
 }
 
 void UserInterface::retrieveAndShowBookings(const std::string& statusFilter) {
@@ -345,7 +383,7 @@ void UserInterface::retrieveAndShowBookings(const std::string& statusFilter) {
 		std::cerr << "Failed to prepare the SQL statement. \n";
 	}
 
-	//Footer for the booking seciton
+	//Footer for the booking section
 	std::cout << "--------------------------------------" << std::endl;
 
 }
@@ -439,11 +477,13 @@ void UserInterface::displayCars(const std::vector<Car>& cars) {
 	}
 	else {
 		std::cout << "--------------------------------------------------\n";
-		std::cout << "Search Results:\n";
+		std::cout << std::left << std::setw(7) << "Index" << std::setw(10) << "CarID" << std::setw(15) << "Make"
+			<< std::setw(15) << "Model" << std::setw(10) << "Year" << std::setw(15) << "Mileage" << "Availability\n";
+		std::cout << "--------------------------------------------------\n";
 		for (size_t i = 0; i < cars.size(); ++i) {
 			const auto& car = cars[i];
-			std::cout << "Index: " << i <<  ", CarID: " << car.carID << ", Make: " << car.make << ", Model: " << car.model
-				<< ", Year: " << car.year << ", Mileage: " << car.mileage << ", Availability: "
+			std::cout << std::left << std::setw(7) << i << std::setw(10) << car.carID << std::setw(15) << car.make
+				<< std::setw(15) << car.model << std::setw(10) << car.year << std::setw(15) << car.mileage
 				<< (car.isAvailable ? "Yes" : "No") << "\n";
 		}
 		std::cout << "-------------------------------------------------\n";
@@ -455,6 +495,7 @@ void UserInterface::searchCars() {
 	bool availableOnly;
 
 	//Get search criteria from the user
+	std::cout << "----------------------------------------------\n";
 	std::cout << "Enter make (or leave empty):";
 	std::cin.ignore();
 	std::getline(std::cin, make);
@@ -464,7 +505,7 @@ void UserInterface::searchCars() {
 
 	std::cout << "Search for available cars only? (1 for Yes, 0 for No): ";
 	std::cin >> availableOnly;
-
+	std::cout << "----------------------------------------------\n";
 
 	//Call the CarManager function to search for cars
 	std::vector<Car> searchResults = carManager.searchCars(make, model, availableOnly);
@@ -474,7 +515,8 @@ void UserInterface::searchCars() {
 
 	//Book a car if there are search results
 	if (!searchResults.empty()) {
-		std::cout << "Do you want to book a car ? (1 for Yes, 0 for No): ";
+		std::cout << "----------------------------------------------\n";
+		std::cout << "Do you want to book a car? (1 for Yes, 0 for No): ";
 		int choice;
 		std::cin >> choice;
 
@@ -498,5 +540,6 @@ void UserInterface::searchCars() {
 	else {
 		std::cout << "No cars found matching the criteria. " << std::endl;
 	}
+	std::cout << "----------------------------------------------\n";
 }
 

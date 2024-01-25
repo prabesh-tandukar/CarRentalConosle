@@ -88,7 +88,7 @@ void registerUser(sqlite3* db, const std::string& username, unsigned long hashed
 
 void registerView(sqlite3* db) {
     clearScreen();
-    std::cout << "-------WELCOME TO THE REGISTER PAGE------" << std::endl;
+    std::cout << "********** WELCOME TO THE REGISTER PAGE **********" << std::endl;
     std::string newUsername, newPassword;
 
     //Prompt for username
@@ -102,6 +102,11 @@ void registerView(sqlite3* db) {
     unsigned long hashedPassword = PasswordManager::djb2Hash(newPassword);
 
     registerUser(db, newUsername, hashedPassword);
+    // Provide feedback to the user
+    clearScreen();
+    std::cout << "********** REGISTRATION SUCCESSFUL **********" << std::endl;
+    std::cout << "Thank you for registering, " << newUsername << "!" << std::endl;
+    std::cout << "You can now log in using your credentials." << std::endl;
 }
 
 struct AuthResult {
@@ -139,9 +144,9 @@ AuthResult authenticateUser(sqlite3* db, const std::string& username,unsigned lo
  
 
 AuthResult authenticateView(sqlite3* db) {
-    bool success = false;
+    //bool success = false;
     clearScreen();
-    std::cout << "-*-*-*-*-WELCOME TO THE LOGIN PAGE-*-*-*-*-" << std::endl;
+    std::cout << "********** WELCOME TO THE LOGIN PAGE **********" << std::endl;
     std::string authUsername, authPassword;
     std::cout << "Enter your username: ";
     std::cin >> authUsername;
@@ -197,6 +202,24 @@ bool adminExists(sqlite3* db) {
 //    }
 //}
 
+void printSeparator() {
+    std::cout << "----------------------------------------" << std::endl;
+}
+
+void printMenuOption(int option, const std::string& description) {
+    std::cout << " " << option << ". " << description << std::endl;
+}
+
+void printMainMenu() {
+    //clearScreen();
+    std::cout << "********** Welcome to Easy Car Rental **********" << std::endl;
+    printSeparator();
+    printMenuOption(1, "Login");
+    printMenuOption(2, "Register");
+    printMenuOption(3, "Exit");
+    printSeparator();
+    std::cout << "Enter your choice: ";
+}
 
 
 
@@ -216,6 +239,8 @@ int main()
     executeQuery(db, dropsql.c_str())*/;
    /* std::string dropsql = "DROP TABLE rentalbooking";
     executeQuery(db, dropsql.c_str());*/
+    /*std::string dropcarsql = "DROP TABLE car";
+    executeQuery(db, dropcarsql.c_str());*/
 
     //View data in user table
     std::string selectsql = "SELECT * FROM USERS";
@@ -225,7 +250,9 @@ int main()
     std::string carsql = "SELECT * FROM CAR";
     executeQuery(db, carsql.c_str());
     std::string booksql = "SELECT * FROM RENTALBOOKING";
-    executeQuery(db, booksql.c_str());
+    executeQuery(db, booksql.c_str()); 
+    std::string rolesql = "SELECT * FROM ROLE";
+    executeQuery(db, rolesql.c_str());
   
     //insertTestData(db);
 
@@ -243,9 +270,7 @@ int main()
     std::string role;
     
     while (appRunning) {
-        //clearScreen();
-        std::cout << "----------Welcome to Easy Car Rental ----------:" << std::endl;
-        std::cout << "Enter: \n 1 to login \n 2 to register \n 3 to exit" << std::endl;
+        printMainMenu();
         int input;
         std::cin >> input;
 
