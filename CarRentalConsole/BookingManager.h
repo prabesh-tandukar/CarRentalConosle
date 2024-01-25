@@ -19,6 +19,7 @@ public:
 	void approveBooking();
 	void rejectBooking();
 	void cancelBooking();
+	void displayPendingBookings();
 
 };
 

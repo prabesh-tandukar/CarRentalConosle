@@ -16,7 +16,14 @@ int BookingManager::callback(void* NotUsed, int argc, char** argv, char** azColN
 
 void BookingManager::showMenu() {
 	int choice;
-		std::cout << "1: View All Bookings \n2: Update Booking\n3: Approve Booking \n4: Reject Booking \n5: Delete Booking\n";
+	std::cout << "\n+-----------------------------+\n";
+	std::cout << "|   Manage Rental Bookings    |\n";
+	std::cout << "+-----------------------------+\n";
+	std::cout << "| 1: View All Bookings        |\n";
+	std::cout << "| 2: Approve Booking          |\n";
+	std::cout << "| 3: Reject Booking           |\n";
+	std::cout << "+-----------------------------+\n";
+	std::cout << "Enter Your Choice: ";
 		std::cin >> choice;
 
 		switch (choice) {
@@ -24,15 +31,9 @@ void BookingManager::showMenu() {
 			viewAllBookings();
 			break;
 		case 2:
-			updateBooking();
-			break;
-		case 3:
-			cancelBooking();
-			break;
-		case 4:
 			approveBooking();
 			break;
-		case 5:
+		case 3:
 			rejectBooking();
 			break;
 		default:
@@ -51,7 +52,44 @@ void BookingManager::viewAllBookings() {
 	}
 }
 
+void BookingManager::displayPendingBookings() {
+	std::string sql = "SELECT RentalBooking.BookingID, Users.username, Car.Make, Car.Model, RentalBooking.StartDate, RentalBooking.EndDate, RentalBooking.TotalCost FROM RentalBooking "
+		"JOIN Users ON RentalBooking.CustomerID = Users.UserID "
+		"JOIN Car ON RentalBooking.CarID = Car.CarID "
+		"WHERE RentalBooking.Status = 'Pending';";
+
+	sqlite3_stmt* stmt;
+	if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+		// Fetch and display pending bookings
+		while (sqlite3_step(stmt) == SQLITE_ROW) {
+			int bookingId = sqlite3_column_int(stmt, 0);
+			std::string customerName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+			std::string carName = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2))) + " " +
+				std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)));
+
+			std::string startDate = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+			std::string endDate = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+			double totalCost = sqlite3_column_double(stmt, 6);
+
+			std::cout << "BookingID: " << bookingId << "\n"
+				<< "Customer: " << customerName << "\n"
+				<< "Car: " << carName << "\n"
+				<< "Period: " << startDate << " to " << endDate << "\n"
+				<< "Total Cost: " << totalCost << "\n"
+				<< "----------------------------\n";
+		}
+
+		// Finalize the statement to release resources
+		sqlite3_finalize(stmt);
+	}
+	else {
+		std::cerr << "Failed to prepare the SQL statement. \n";
+	}
+}
+
 void BookingManager::updateBooking() {
+	
+
 	int bookingId;
 	std::string newStartDate, newEndDate, tempInput;
 	double totalCost = -1; //Using -1 as default value to indicate "no update"
@@ -116,6 +154,8 @@ void BookingManager::cancelBooking() {
 }
 
 void BookingManager::approveBooking() {
+	displayPendingBookings(); //Display pending bookings before approval
+
 	int bookingId;
 	std::cout << "Enter Booking ID to approve: ";
 	std::cin >> bookingId;
@@ -133,6 +173,8 @@ void BookingManager::approveBooking() {
 }
 
 void BookingManager::rejectBooking() {
+	displayPendingBookings(); //Display pending bookings before approval
+
 	int bookingId;
 	std::cout << "Enter Booking ID to reject: ";
 	std::cin >> bookingId;

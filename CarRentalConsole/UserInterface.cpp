@@ -56,6 +56,7 @@ bool UserInterface::showMenu() {
 			<< "4. Cancel Booking\n"
 			<< "5. Search for Cars\n"
 			<< "6. Log Out\n";
+		std::cout << "Enter your choice: ";
 		std::cin >> choice;
 		//Implementation of user menu
 
@@ -258,7 +259,8 @@ void UserInterface::bookCar() {
 }
 
 void UserInterface::bookCar(const Car& selectedCar) {
-	std::string startDate, endDate;
+	bookCarHeader();
+	std::string startDateStr, endDateStr;
 
 	// Display details of the selected car
 	std::cout << "Selected Car Details:\n"
@@ -269,11 +271,63 @@ void UserInterface::bookCar(const Car& selectedCar) {
 		<< "Mileage: " << selectedCar.mileage << "\n"
 		<< "Availability: " << (selectedCar.isAvailable ? "Yes" : "No") << "\n\n";
 
-	std::cout << "Enter the start date (YYYY-MM-DD): ";
-	std::cin >> startDate;
+	std::tm startDate = {};
+	std::tm endDate = {};
 
-	std::cout << "Enter the end date (YYYY-MM-DD): ";
-	std::cin >> endDate;
+	// Functions to get valid year, month, and day
+	auto getValidYear = [](const std::string& prompt) -> int {
+		int year;
+		do {
+			std::cout << prompt;
+			std::cin >> year;
+		} while (year < 2024 || year > 2030);
+		return year;
+		};
+
+	auto getValidMonth = [](const std::string& prompt) -> int {
+		int month;
+		do {
+			std::cout << prompt;
+			std::cin >> month;
+		} while (month < 1 || month > 12);
+		return month;
+		};
+
+	auto getValidDay = [](const std::string& prompt, int maxDay) -> int {
+		int day;
+		do {
+			std::cout << prompt;
+			std::cin >> day;
+		} while (day < 1 || day > maxDay);
+		return day;
+		};
+
+	// Get the start date components
+	startDate.tm_year = getValidYear("Enter the start year (2024-2030): ") - 1900;
+	startDate.tm_mon = getValidMonth("Enter the start month (1-12): ") - 1; // Month is 0-based
+	startDate.tm_mday = getValidDay("Enter the start day (1-31): ", 31);
+
+	// Get the end date components
+	endDate.tm_year = getValidYear("Enter the end year (2024-2030): ") - 1900;
+	endDate.tm_mon = getValidMonth("Enter the end month (1-12): ") - 1; // Month is 0-based
+	endDate.tm_mday = getValidDay("Enter the end day (1-31): ", 31);
+
+	// Convert tm structures to strings
+	std::ostringstream startDateStreamStr, endDateStreamStr;
+	startDateStreamStr << std::put_time(&startDate, "%Y-%m-%d");
+	endDateStreamStr << std::put_time(&endDate, "%Y-%m-%d");
+	startDateStr = startDateStreamStr.str();
+	endDateStr = endDateStreamStr.str();
+
+	// Calculate the duration between start and end dates
+	auto start = std::chrono::system_clock::from_time_t(std::mktime(&startDate));
+	auto end = std::chrono::system_clock::from_time_t(std::mktime(&endDate));
+	auto duration = std::chrono::duration_cast<std::chrono::duration<int, std::ratio<86400>>>(end - start);
+
+	// Calculate total days and cost
+	int totalDays = duration.count();
+	const double costPerDay = 50.0;
+	double totalCost = totalDays * costPerDay;
 
 	// Perform the booking
 	std::string insertBookingSQL = "INSERT INTO RentalBooking (CustomerID, CarID, StartDate, EndDate, Status) VALUES (?, ?, ?, ?, 'Pending');";
@@ -282,11 +336,18 @@ void UserInterface::bookCar(const Car& selectedCar) {
 	if (sqlite3_prepare_v2(db, insertBookingSQL.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
 		sqlite3_bind_int(stmt, 1, userID);
 		sqlite3_bind_int(stmt, 2, selectedCar.carID);
-		sqlite3_bind_text(stmt, 3, startDate.c_str(), -1, SQLITE_STATIC);
-		sqlite3_bind_text(stmt, 4, endDate.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 3, startDateStr.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 4, endDateStr.c_str(), -1, SQLITE_STATIC);
 
 		if (sqlite3_step(stmt) == SQLITE_DONE) {
+			// Display booking details
+			std::cout << "-----------------------------------------------------" << std::endl;
 			std::cout << "Booking successful. Your request is pending approval.\n";
+			std::cout << "-----------------------------------------------------" << std::endl;
+			std::cout << "Total Days: " << totalDays << "\n";
+			std::cout << "-----------------------------------------------------" << std::endl;
+			std::cout << "Total Cost: " << totalCost << "\n";
+			std::cout << "-----------------------------------------------------" << std::endl;
 		}
 		else {
 			std::cerr << "Booking failed. Please try again.\n";
@@ -296,7 +357,9 @@ void UserInterface::bookCar(const Car& selectedCar) {
 	else {
 		std::cerr << "Failed to prepare the booking statement.\n";
 	}
+	std::cout << "==========================================\n";
 }
+
 
 void UserInterface::viewUserBookingsHeader() {
 	std::cout << "==========================================\n";
@@ -316,6 +379,7 @@ void UserInterface::viewUserBookings() {
 		<< "3. Confirmed Bookings\n"
 		<< "4. Rejected Bookings\n"
 		<< "5. Cancelled Bookings\n";
+	std::cout << "Enter your choice: ";
 	std::cin >> choice;
 
 	switch (choice) {
@@ -495,17 +559,23 @@ void UserInterface::searchCars() {
 	bool availableOnly;
 
 	//Get search criteria from the user
-	std::cout << "----------------------------------------------\n";
-	std::cout << "Enter make (or leave empty):";
+	std::cout << "+---------------------------------------------+\n";
+	std::cout << "|               Search Cars                   |\n";
+	std::cout << "+---------------------------------------------+\n";
+	std::cout << "| Enter make (or leave empty):                |\n";
 	std::cin.ignore();
+	std::cout << "| ";
 	std::getline(std::cin, make);
-
-	std::cout << "Enter model (or leave empty):";
+	std::cout << "|                                             |\n";
+	std::cout << "| Enter model (or leave empty):               |\n";
+	std::cout << "| ";
 	std::getline(std::cin, model);
-
-	std::cout << "Search for available cars only? (1 for Yes, 0 for No): ";
+	std::cout << "|                                             |\n";
+	std::cout << "| Search for available cars only? (1 for Yes, |\n";
+	std::cout << "| 0 for No):                                  |\n";
+	std::cout << "| ";
 	std::cin >> availableOnly;
-	std::cout << "----------------------------------------------\n";
+	std::cout << "+---------------------------------------------+\n";
 
 	//Call the CarManager function to search for cars
 	std::vector<Car> searchResults = carManager.searchCars(make, model, availableOnly);
@@ -515,14 +585,17 @@ void UserInterface::searchCars() {
 
 	//Book a car if there are search results
 	if (!searchResults.empty()) {
-		std::cout << "----------------------------------------------\n";
-		std::cout << "Do you want to book a car? (1 for Yes, 0 for No): ";
+		std::cout << "+------------------------------------------------+\n";
+		std::cout << "| Do you want to book a car? (1 for Yes,         |\n";
+		std::cout << "| 0 for No):                                     |\n";
+		std::cout << "| ";
 		int choice;
 		std::cin >> choice;
 
 		if (choice == 1) {
 			int carIndex;
-			std::cout << "Enter the index of the car you want to book: ";
+			std::cout << "| Enter the index of the car you want to book:|\n";
+			std::cout << "| ";
 			std::cin >> carIndex;
 
 			if (carIndex >= 0 && carIndex < searchResults.size()) {
@@ -530,16 +603,17 @@ void UserInterface::searchCars() {
 				bookCar(searchResults[carIndex]);
 			}
 			else {
-				std::cerr << "Invalid car index. Please enter a valid index." << std::endl;
+				std::cerr << "| Invalid car index. Please enter a valid    |\n";
+				std::cerr << "| index.                                     |\n";
 			}
 		}
 		else {
-			std::cout << "Booking canceled." << std::endl;
+			std::cout << "| Booking canceled.                          |\n";
 		}
 	}
 	else {
-		std::cout << "No cars found matching the criteria. " << std::endl;
+		std::cout << "| No cars found matching the criteria.       |\n";
 	}
-	std::cout << "----------------------------------------------\n";
+	std::cout << "+--------------------------------------------+\n";
 }
 
