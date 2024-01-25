@@ -60,59 +60,45 @@ void createTables(sqlite3* db) {
 }
 
 void createDummyData(sqlite3* db) {
-    // Users table dummy data
-    /*const char* insertUsersDummyDataSQL = "INSERT INTO Users (username, password, role) VALUES "
-        "('user1', 'password1', 'user'),"
-        "('user2', 'password2', 'user'),"
-        "('admin1', 'adminpass1', 'admin'),"
-        "('admin2', 'adminpass2', 'admin'),"
-        "('user3', 'password3', 'user');";
-    if (sqlite3_exec(db, insertUsersDummyDataSQL, nullptr, nullptr, nullptr) != SQLITE_OK) {
-        std::cerr << "Failed to insert dummy data into Users table.\n";
-    }*/
+    // Check if the Car table is empty
+    const char* checkCarTableEmptySQL = "SELECT COUNT(*) FROM Car;";
+    sqlite3_stmt* checkCarTableStmt;
+    int carRowCount = 0;
 
-    // Role table dummy data
-    const char* insertRoleDummyDataSQL = "INSERT INTO Role (RoleName) VALUES "
-        "('user'),"
-        "('admin');";
-    if (sqlite3_exec(db, insertRoleDummyDataSQL, nullptr, nullptr, nullptr) != SQLITE_OK) {
-        std::cerr << "Failed to insert dummy data into Role table.\n";
+    if (sqlite3_prepare_v2(db, checkCarTableEmptySQL, -1, &checkCarTableStmt, nullptr) == SQLITE_OK) {
+        if (sqlite3_step(checkCarTableStmt) == SQLITE_ROW) {
+            carRowCount = sqlite3_column_int(checkCarTableStmt, 0);
+        }
+        sqlite3_finalize(checkCarTableStmt);
     }
 
-    // Car table dummy data
-    const char* insertCarDummyDataSQL = "INSERT INTO Car (Make, Model, Year, Mileage, IsAvailable, MinRentPeriod, MaxRentPeriod) VALUES "
-        "('Toyota', 'Corolla', 2022, 10000, 1, 1, 7),"
-        "('Honda', 'Civic', 2021, 12000, 1, 1, 7),"
-        "('Ford', 'Focus', 2022, 8000, 1, 1, 7),"
-        "('Chevrolet', 'Malibu', 2021, 15000, 1, 1, 7),"
-        "('BMW', 'X5', 2020, 20000, 1, 1, 7),"
-        "('Mercedes', 'C-Class', 2021, 18000, 1, 1, 7),"
-        "('Audi', 'A4', 2022, 16000, 1, 1, 7),"
-        "('Nissan', 'Altima', 2020, 13000, 1, 1, 7),"
-        "('Hyundai', 'Elantra', 2022, 11000, 1, 1, 7),"
-        "('Kia', 'Optima', 2021, 14000, 1, 1, 7);";
-    if (sqlite3_exec(db, insertCarDummyDataSQL, nullptr, nullptr, nullptr) != SQLITE_OK) {
-        std::cerr << "Failed to insert dummy data into Car table.\n";
-    }
+    // If the Car table is empty, insert dummy data
+    if (carRowCount == 0) {
+        // Role table dummy data
+        const char* insertRoleDummyDataSQL = "INSERT INTO Role (RoleName) VALUES "
+            "('user'),"
+            "('admin');";
+        executeQuery(db, insertRoleDummyDataSQL);
 
-    // RentalBooking table dummy data
-    /*const char* insertRentalBookingDummyDataSQL = "INSERT INTO RentalBooking (CustomerID, CarID, StartDate, EndDate, TotalCost, Status) VALUES "
-        "(1, 1, '2022-01-01', '2022-01-07', 200.0, 'Pending'),"
-        "(2, 2, '2022-01-02', '2022-01-08', 220.0, 'Pending'),"
-        "(3, 3, '2022-01-03', '2022-01-09', 240.0, 'Pending'),"
-        "(4, 4, '2022-01-04', '2022-01-10', 260.0, 'Pending'),"
-        "(5, 5, '2022-01-05', '2022-01-11', 280.0, 'Pending'),"
-        "(1, 6, '2022-01-06', '2022-01-12', 300.0, 'Pending'),"
-        "(2, 7, '2022-01-07', '2022-01-13', 320.0, 'Pending'),"
-        "(3, 8, '2022-01-08', '2022-01-14', 340.0, 'Pending'),"
-        "(4, 9, '2022-01-09', '2022-01-15', 360.0, 'Pending'),"
-        "(5, 10, '2022-01-10', '2022-01-16', 380.0, 'Pending');";
-    if (sqlite3_exec(db, insertRentalBookingDummyDataSQL, nullptr, nullptr, nullptr) != SQLITE_OK) {
-        std::cerr << "Failed to insert dummy data into RentalBooking table.\n";
-    }
+        // Car table dummy data
+        const char* insertCarDummyDataSQL = "INSERT INTO Car (Make, Model, Year, Mileage, IsAvailable, MinRentPeriod, MaxRentPeriod) VALUES "
+            "('Toyota', 'Corolla', 2022, 10000, 1, 1, 7),"
+            "('Honda', 'Civic', 2021, 12000, 1, 1, 7),"
+            "('Ford', 'Focus', 2022, 8000, 1, 1, 7),"
+            "('Chevrolet', 'Malibu', 2021, 15000, 1, 1, 7),"
+            "('BMW', 'X5', 2020, 20000, 1, 1, 7),"
+            "('Mercedes', 'C-Class', 2021, 18000, 1, 1, 7),"
+            "('Audi', 'A4', 2022, 16000, 1, 1, 7),"
+            "('Nissan', 'Altima', 2020, 13000, 1, 1, 7),"
+            "('Hyundai', 'Elantra', 2022, 11000, 1, 1, 7),"
+            "('Kia', 'Optima', 2021, 14000, 1, 1, 7);";
+        executeQuery(db, insertCarDummyDataSQL);
 
-    std::cout << "Dummy data insertion completed.\n";*/
+        std::cout << "Dummy data insertion completed.\n";
+    }
+   
 }
+
 
 //Function to register a user
 void registerUser(sqlite3* db, const std::string& username, unsigned long hashedPassword) {
@@ -279,30 +265,6 @@ int main()
 
     createTables(db);
 
-    //drop user table
-    /*std::string dropusql = "DROP TABLE users";
-    executeQuery(db, dropusql.c_str());
-    std::string dropsql = "DROP TABLE rentalbooking";
-    executeQuery(db, dropsql.c_str());
-    std::string dropcarsql = "DROP TABLE car";
-    executeQuery(db, dropcarsql.c_str());
-    std::string droprsql = "DROP TABLE role";
-    executeQuery(db, droprsql.c_str());*/
-
-    //View data in user table
-    std::string selectsql = "SELECT * FROM USERS";
-    int outp = executeQuery(db, selectsql.c_str());
-
-    //View data in car table
-   /* std::string carsql = "SELECT * FROM CAR";
-    executeQuery(db, carsql.c_str());
-    std::string booksql = "SELECT * FROM RENTALBOOKING";
-    executeQuery(db, booksql.c_str()); 
-    std::string rolesql = "SELECT * FROM ROLE";
-    executeQuery(db, rolesql.c_str());*/
-  
-    //insertTestData(db);
-
     //Check if admin exists and if not, create one
     if (!adminExists(db)) {
         unsigned long hashedPassword = PasswordManager::djb2Hash("admin");
@@ -311,7 +273,7 @@ int main()
         executeQuery(db, adminSQL.c_str());
     }
 
-    //createDummyData(db);
+    createDummyData(db);
     
     bool appRunning = true;
     int userID = 1;
